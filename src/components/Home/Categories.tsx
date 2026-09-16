@@ -1,8 +1,11 @@
 import { ArrowUpRight } from "lucide-react"
 import Container from "../ui/Container"
 import { categories } from "../../data/categories"
+import useScrollReveal from "../../hooks/useScrollReveal"
 
 function Categories() {
+    const sectionRef = useScrollReveal();
+
   return (
     <section className="bg-[#f8fafc] py-20 sm:py-24">
       <Container>
@@ -20,7 +23,7 @@ function Categories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div ref={sectionRef} className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {categories.map((category) => (
             <article
               key={category.id}

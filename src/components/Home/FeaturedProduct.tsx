@@ -1,8 +1,10 @@
 import Container from "../ui/Container"
 import ProductCard from "../product/ProductCard"
 import { products } from "../../data/Product"
+import useScrollReveal from "../../hooks/useScrollReveal"
 
 function FeaturedProducts() {
+    const sectionRef = useScrollReveal();
   return (
     <section className="py-20">
       <Container>
@@ -20,7 +22,7 @@ function FeaturedProducts() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={sectionRef} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}

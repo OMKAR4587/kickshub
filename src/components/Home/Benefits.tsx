@@ -1,5 +1,6 @@
 import { ShieldCheck, Truck, RefreshCw, Headphones } from "lucide-react"
 import Container from "../ui/Container"
+import useScrollReveal from "../../hooks/useScrollReveal"
 
 const benefits = [
   {
@@ -25,10 +26,12 @@ const benefits = [
 ]
 
 function Benefits() {
+    const sectionRef = useScrollReveal();
+
   return (
     <section className="border-y border-neutral-100 py-16">
       <Container>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={sectionRef} className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((benefit) => {
             const Icon = benefit.icon
 

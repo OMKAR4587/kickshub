@@ -2,8 +2,10 @@ import { ArrowRight } from "lucide-react"
 import Container from "../ui/Container"
 import ProductCard from "../product/ProductCard"
 import { products } from "../../data/Product"
+import useScrollReveal from "../../hooks/useScrollReveal"
 
 function NewArrivals() {
+    const sectionRef = useScrollReveal();
   const newProducts = products.slice(0, 3)
 
   return (
@@ -33,7 +35,7 @@ function NewArrivals() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div ref={sectionRef} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {newProducts.map((product) => (
             <ProductCard
               key={product.id}
