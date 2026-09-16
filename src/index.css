@@ -1,6 +1,79 @@
 @import "tailwindcss";
 
+/* ========================================
+   KICKSHUB — GLOBAL DESIGN SYSTEM
+   ======================================== */
+
+:root {
+  /* Brand Colors */
+  --color-primary: #000000;
+  --color-primary-hover: #171717;
+  --color-accent: #c6ff00;
+
+  /* Backgrounds */
+  --color-background: #ffffff;
+  --color-surface: #f5f5f5;
+
+  /* Text */
+  --color-text: #111111;
+  --color-text-muted: #737373;
+
+  /* Borders */
+  --color-border: #e5e5e5;
+
+  /* Feedback */
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+
+  /* Layout */
+  --container-max-width: 80rem;
+
+  /* Radius */
+  --radius-card: 1rem;
+  --radius-large: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* Animation */
+  --transition-fast: 200ms ease;
+}
+
+/* ========================================
+   BASE
+   ======================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+button,
+a {
+  transition: var(--transition-fast);
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ========================================
+   SELECTION
+   ======================================== */
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
