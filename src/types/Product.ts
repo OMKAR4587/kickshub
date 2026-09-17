@@ -5,4 +5,8 @@ export type Product = {
   image: string
   category: string
   badge?: string
+  description: string
+  sizes: number[]
+  inStock: boolean
+  isNew: boolean
 }
