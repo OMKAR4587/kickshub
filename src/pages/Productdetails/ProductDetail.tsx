@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import Container from "../../components/ui/Container";
 import { useWishlist } from "../../context/WishlistContext";
+import { useToast } from "../../context/ToastContext";
 import { products } from "../../data/Product";
+import gsap from "gsap";
 
 function ProductDetail() {
   const { addToCart } = useCart();
@@ -13,6 +15,31 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const pageRef = useRef<HTMLDivElement | null>(null);
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".product-image", {
+        opacity: 0,
+        x: -40,
+        scale: 0.96,
+        duration: 0.8,
+        ease: "power3.out",
+      });
+
+      gsap.from(".product-info > p, .product-info > h1, .product-info > div", {
+        opacity: 0,
+        y: 25,
+        duration: 0.6,
+        stagger: 0.08,
+        delay: 0.15,
+        ease: "power3.out",
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, []);
 
   if (!product) {
     return (
@@ -52,7 +79,7 @@ function ProductDetail() {
   };
 
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
+    <section ref={pageRef} className="py-12 sm:py-16 lg:py-20">
       <Container>
         {/* Back */}
         <Link
@@ -91,13 +118,13 @@ function ProductDetail() {
               <img
                 src={product.image}
                 alt={product.name}
-                className="relative z-10 w-full object-contain transition duration-500 hover:scale-105"
+                className="product-image relative z-10 w-full object-contain transition duration-500 hover:scale-105"
               />
             </div>
           </div>
 
           {/* Product information */}
-          <div className="flex flex-col justify-center">
+          <div className="product-info flex flex-col justify-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-600">
               {product.category}
             </p>
@@ -139,9 +166,9 @@ function ProductDetail() {
                     key={size}
                     type="button"
                     onClick={() => setSelectedSize(size)}
-                    className={`rounded-xl border py-3 text-sm font-semibold transition ${
+                    className={`rounded-xl border py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${
                       selectedSize === size
-                        ? "border-black bg-black text-white"
+                        ? "border-black bg-black text-white shadow-md"
                         : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400"
                     }`}
                   >
@@ -162,7 +189,7 @@ function ProductDetail() {
                   type="button"
                   onClick={decreaseQuantity}
                   disabled={quantity === 1}
-                  className="flex h-full w-12 items-center justify-center text-neutral-500 transition hover:text-black disabled:opacity-30"
+                  className="flex h-full w-12 items-center justify-center text-neutral-500 transition hover:text-black disabled:opacity-30 hover:scale-110"
                 >
                   <Minus size={16} />
                 </button>
@@ -174,7 +201,7 @@ function ProductDetail() {
                 <button
                   type="button"
                   onClick={increaseQuantity}
-                  className="flex h-full w-12 items-center justify-center text-neutral-500 transition hover:text-black"
+                  className="flex h-full w-12 items-center justify-center text-neutral-500 transition hover:text-black hover:scale-110"
                 >
                   <Plus size={16} />
                 </button>
@@ -189,8 +216,10 @@ function ProductDetail() {
                 if (selectedSize === null) return;
 
                 addToCart(product, selectedSize, quantity);
+
+                showToast(`${product.name} added to your cart`, "success");
               }}
-              className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-black text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
+              className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-black text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-lg disabled:cursor-not-allowed disabled:translate-y-0 disabled:bg-neutral-200 disabled:text-neutral-400"
             >
               <ShoppingBag size={18} />
 

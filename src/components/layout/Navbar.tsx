@@ -15,7 +15,7 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
       <Container>
-        <nav className="flex h-20 items-center justify-between">
+        <nav className="flex h-13 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="text-2xl font-black tracking-tighter">
             Kicks<span className="text-neutral-500">Hub</span>

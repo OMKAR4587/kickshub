@@ -72,12 +72,12 @@ function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="transition hover:text-white">
+                <a href="#New-arrival" className="transition hover:text-white">
                   New Arrivals
                 </a>
               </li>
               <li>
-                <a href="#" className="transition hover:text-white">
+                <a href="#Best-sellers" className="transition hover:text-white">
                   Best Sellers
                 </a>
               </li>

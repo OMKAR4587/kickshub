@@ -247,7 +247,7 @@ function Hero() {
             md:py-10
             lg:grid-cols-[0.9fr_1.1fr]
             lg:gap-4
-            lg:py-10
+            lg:py-0
           "
         >
           {/* =========================
@@ -425,12 +425,12 @@ function Hero() {
             className="
               relative
               flex
-              min-h-[320px]
+              min-h-80
               items-center
               justify-center
-              sm:min-h-[400px]
-              md:min-h-[480px]
-              lg:min-h-[560px]
+              sm:min-h-100
+              md:min-h-120
+              lg:min-h-140
             "
           >
             {/* Background text */}
@@ -474,8 +474,8 @@ function Hero() {
                 sm:w-100
                 md:h-116
                 md:w-116
-                lg:h-136
-                lg:w-136
+                lg:h-130
+                lg:w-130
               "
               aria-hidden="true"
             >
@@ -559,26 +559,7 @@ function Hero() {
                 PRODUCT CARD
             ========================== */}
             <div
-              className="
-                hero-decoration
-                absolute
-                bottom-0
-                left-0
-                z-30
-                w-44
-                rounded-xl
-                border
-                border-white
-                bg-white/85
-                p-3
-                shadow-xl
-                shadow-neutral-900/10
-                backdrop-blur-xl
-                min-[400px]:w-48
-                sm:bottom-3
-                sm:w-52
-                sm:rounded-2xl
-                sm:p-4
+              className="hero-decoration absolute top-100 -left-44 max-h-fit  z-30  rounded-xl  border   border-white   bg-white/85  p-3  shadow-xl  shadow-neutral-900/10  backdrop-blur-xl  min-[400px]:w-48  sm:bottom-3  sm:w-52  sm:rounded-2xl  sm:p-4
               "
             >
               <div className="flex items-center justify-between">
@@ -635,7 +616,7 @@ function Hero() {
 
             {/* SVG arrow */}
             <svg
-              className="hero-decoration absolute -right-2 bottom-16 hidden w-24 text-purple-400 sm:block md:w-32"
+              className="hero-decoration absolute -left-25 bottom-40 -rotate-12 hidden w-24 text-purple-400 sm:block md:w-34"
               viewBox="0 0 120 60"
               fill="none"
               aria-hidden="true"
