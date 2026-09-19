@@ -2,10 +2,9 @@ import { useEffect, useRef } from "react"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import gsap from "gsap"
-
-import Container from "../../components/ui/Container"
-import { useCart } from "../../context/CartContext"
-import { useToast } from "../../context/ToastContext"
+import Container from "../../../components/ui/Container";
+import { useCart } from "../../../context/CartContext";
+import { useToast } from "../../../context/ToastContext";
 
 function Cart() {
   const {
@@ -95,7 +94,7 @@ function Cart() {
   return (
     <section
       ref={pageRef}
-      className="py-12 sm:py-14 lg:py-10"
+      className="py-12 sm:py-16 lg:py-20"
     >
       <Container>
         {/* Header */}

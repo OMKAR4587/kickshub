@@ -1,23 +1,43 @@
-import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
-import Container from "../ui/Container";
+import {
+  Heart,
+  Menu,
+  Search,
+  ShoppingBag,
+  User,
+  X,
+} from "lucide-react"
+
+import { useState } from "react"
+
+import { Link, NavLink } from "react-router-dom"
+
+import { useCart } from "../../context/CartContext"
+import { useWishlist } from "../../context/WishlistContext"
+
+import Container from "../ui/Container"
 
 function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { cartCount } = useCart();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const { cartCount } = useCart()
+  const { wishlist } = useWishlist()
+
+  const wishlistCount = wishlist.length
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Sneakers", path: "/products" },
-  ];
+  ]
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
       <Container>
         <nav className="flex h-13 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-black tracking-tighter">
+          <Link
+            to="/"
+            className="text-2xl font-black tracking-tighter"
+          >
             Kicks<span className="text-neutral-500">Hub</span>
           </Link>
 
@@ -46,40 +66,58 @@ function Navbar() {
             <button
               type="button"
               aria-label="Search"
-              className="rounded-full p-2.5 hover:bg-neutral-100"
+              className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <Search size={20} strokeWidth={1.8} />
+              <Search
+                size={20}
+                strokeWidth={1.8}
+              />
             </button>
 
             {/* Account */}
             <Link
               to="/account"
               aria-label="Account"
-              className="rounded-full p-2.5 hover:bg-neutral-100"
+              className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <User size={20} strokeWidth={1.8} />
+              <User
+                size={20}
+                strokeWidth={1.8}
+              />
             </Link>
 
             {/* Wishlist */}
-            <button
-              type="button"
-              aria-label="Wishlist"
-              className="rounded-full p-2.5 hover:bg-neutral-100"
+            <Link
+              to="/wishlist"
+              aria-label={`Wishlist with ${wishlistCount} items`}
+              className="relative rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <Heart size={20} strokeWidth={1.8} />
-            </button>
+              <Heart
+                size={20}
+                strokeWidth={1.8}
+              />
+
+              {wishlistCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 max-w-10 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[10px] font-bold leading-none text-white">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
+            </Link>
 
             {/* Cart */}
             <Link
               to="/cart"
-              aria-label="Shopping cart"
-              className="relative rounded-full p-2.5 hover:bg-neutral-100"
+              aria-label={`Shopping cart with ${cartCount} items`}
+              className="relative rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <ShoppingBag size={20} strokeWidth={1.8} />
+              <ShoppingBag
+                size={20}
+                strokeWidth={1.8}
+              />
 
               {cartCount > 0 && (
-                <span className="absolute -right-3 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-purple-600 px-1 text-[10px] font-bold text-white">
-                  {cartCount}
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 max-w-10 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[10px] font-bold leading-none text-white">
+                  {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
             </Link>
@@ -91,35 +129,73 @@ function Navbar() {
             <button
               type="button"
               aria-label="Search"
-              className="rounded-full p-2.5 hover:bg-neutral-100"
+              className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <Search size={19} strokeWidth={1.8} />
+              <Search
+                size={19}
+                strokeWidth={1.8}
+              />
             </button>
+
+            {/* Wishlist */}
+            <Link
+              to="/wishlist"
+              aria-label={`Wishlist with ${wishlistCount} items`}
+              className="relative rounded-full p-2.5 transition hover:bg-neutral-100"
+            >
+              <Heart
+                size={19}
+                strokeWidth={1.8}
+              />
+
+              {wishlistCount > 0 && (
+                <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 max-w-8 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[9px] font-bold leading-none text-white">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
+            </Link>
 
             {/* Cart */}
             <Link
               to="/cart"
-              aria-label="Shopping cart"
-              className="relative rounded-full p-2.5 hover:bg-neutral-100"
+              aria-label={`Shopping cart with ${cartCount} items`}
+              className="relative rounded-full p-2.5 transition hover:bg-neutral-100"
             >
-              <ShoppingBag size={19} strokeWidth={1.8} />
+              <ShoppingBag
+                size={19}
+                strokeWidth={1.8}
+              />
 
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-semibold text-white">
-                0
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 max-w-8 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[9px] font-bold leading-none text-white">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Menu */}
             <button
               type="button"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="rounded-full p-2.5 hover:bg-neutral-100"
+              aria-label={
+                isMenuOpen
+                  ? "Close menu"
+                  : "Open menu"
+              }
+              onClick={() =>
+                setIsMenuOpen((previous) => !previous)
+              }
+              className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
               {isMenuOpen ? (
-                <X size={20} strokeWidth={1.8} />
+                <X
+                  size={20}
+                  strokeWidth={1.8}
+                />
               ) : (
-                <Menu size={20} strokeWidth={1.8} />
+                <Menu
+                  size={20}
+                  strokeWidth={1.8}
+                />
               )}
             </button>
           </div>
@@ -136,7 +212,9 @@ function Navbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className={({ isActive }) =>
                     `text-base font-medium ${
-                      isActive ? "text-black" : "text-neutral-500"
+                      isActive
+                        ? "text-black"
+                        : "text-neutral-500"
                     }`
                   }
                 >
@@ -147,25 +225,34 @@ function Navbar() {
               <Link
                 to="/account"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 text-base font-medium text-neutral-500"
+                className="flex items-center gap-3 text-base font-medium text-neutral-500 transition hover:text-black"
               >
                 <User size={18} />
                 Account
               </Link>
 
-              <button
-                type="button"
-                className="flex items-center gap-3 text-base font-medium text-neutral-500"
+              <Link
+                to="/wishlist"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-3 text-base font-medium text-neutral-500 transition hover:text-black"
               >
                 <Heart size={18} />
                 Wishlist
-              </button>
+
+                {wishlistCount > 0 && (
+                  <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700">
+                    {wishlistCount > 99
+                      ? "99+"
+                      : wishlistCount}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
         )}
       </Container>
     </header>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar

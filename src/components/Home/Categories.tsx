@@ -7,7 +7,7 @@ function Categories() {
     const sectionRef = useScrollReveal();
 
   return (
-    <section className="bg-[#f8fafc] py-20 sm:py-24">
+    <section className="bg-[#f8fafc] py-4 sm:py-8">
       <Container>
         <div className="mb-10">
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-600">
@@ -27,7 +27,7 @@ function Categories() {
           {categories.map((category) => (
             <article
               key={category.id}
-              className="group relative min-h-[280px] overflow-hidden rounded-3xl bg-neutral-200"
+              className="group relative min-h-70 overflow-hidden rounded-3xl bg-neutral-200"
             >
               <img
                 src={category.image}
@@ -37,7 +37,7 @@ function Categories() {
 
               <div className="absolute inset-0 bg-black/30 transition-colors duration-300 group-hover:bg-black/40" />
 
-              <div className="relative flex h-full min-h-[280px] flex-col justify-end p-6 text-white sm:p-8">
+              <div className="relative flex h-full min-h-70 flex-col justify-end p-6 text-white sm:p-8">
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <h3 className="text-2xl font-bold sm:text-3xl">
