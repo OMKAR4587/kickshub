@@ -1,0 +1,52 @@
+import type { Product } from "../types/product.js";
+
+export const products: Product[] = [
+  {
+    id: "1",
+    name: "Air Runner",
+    slug: "air-runner",
+    description: "Premium everyday streetwear sneaker.",
+    price: 129,
+    image: "/src/assets/products/air-runner.webp",
+    category: "Running",
+    sizes: [7, 8, 9, 10, 11],
+    inStock: true,
+    isNew: true,
+  },
+  {
+    id: "2",
+    name: "Urban Force",
+    slug: "urban-force",
+    description: "Bold street sneaker built for everyday movement.",
+    price: 149,
+    image: "/src/assets/products/urban-force.webp",
+    category: "Lifestyle",
+    sizes: [7, 8, 9, 10, 11],
+    inStock: true,
+    isNew: true,
+  },
+  {
+    id: "3",
+    name: "Cloud Step",
+    slug: "cloud-step",
+    description: "Lightweight comfort with a modern silhouette.",
+    price: 119,
+    image: "/src/assets/products/cloud-step.webp",
+    category: "Running",
+    sizes: [7, 8, 9, 10],
+    inStock: true,
+    isNew: false,
+  },
+  {
+    id: "4",
+    name: "Street Pro",
+    slug: "street-pro",
+    description: "Clean premium sneaker for everyday streetwear.",
+    price: 139,
+    image: "/src/assets/products/street-pro.webp",
+    category: "Lifestyle",
+    sizes: [8, 9, 10, 11],
+    inStock: true,
+    isNew: false,
+  }
+];
