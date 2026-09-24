@@ -1,13 +1,39 @@
+import { useEffect, useState } from "react";
+
 import Container from "../../components/ui/Container";
 import ProductGrid from "../../components/product/ProductGrid";
 import ProductFilters from "../../components/product/ProductFilter";
 import useProductFilters from "../../hooks/useProductFilter";
 import ProductFilterPanel from "../../components/product/ProductFilterPanel";
-import { products } from "../../data/Product";
-import { useState } from "react";
+import { getProducts } from "../../services/api";
+import type { Product as ProductType } from "../../types/Product";
 
 function Product() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load products");
+        }
+        console.log(data)
+        setProducts(data.products);
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error ? err.message : "Failed to load products",
+        );
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   const {
     search,
     setSearch,
@@ -21,6 +47,29 @@ function Product() {
     filteredProducts,
   } = useProductFilters(products);
 
+  if (loading) {
+    return (
+      <section className="py-16 sm:py-20 lg:py-10">
+        <Container>
+          <div className="flex min-h-[40vh] items-center justify-center">
+            <p className="text-neutral-500">Loading products...</p>
+          </div>
+        </Container>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 sm:py-20 lg:py-10">
+        <Container>
+          <div className="flex min-h-[40vh] items-center justify-center">
+            <p className="text-red-500">{error}</p>
+          </div>
+        </Container>
+      </section>
+    );
+  }
   return (
     <section className="py-16 sm:py-20 lg:py-10">
       <Container>

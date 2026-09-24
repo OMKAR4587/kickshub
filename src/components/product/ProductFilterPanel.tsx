@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react"
-import { X } from "lucide-react"
-import gsap from "gsap"
+import { useEffect, useRef } from "react";
+import { X } from "lucide-react";
+import gsap from "gsap";
 
 type ProductFilterPanelProps = {
-  isOpen: boolean
-  maxPrice: number
-  setMaxPrice: (value: number) => void
-  onClose: () => void
-}
+  isOpen: boolean;
+  maxPrice: number;
+  setMaxPrice: (value: number) => void;
+  onClose: () => void;
+};
 
 function ProductFilterPanel({
   isOpen,
@@ -15,12 +15,12 @@ function ProductFilterPanel({
   setMaxPrice,
   onClose,
 }: ProductFilterPanelProps) {
-  const panelRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const panel = panelRef.current
+    const panel = panelRef.current;
 
-    if (!panel) return
+    if (!panel) return;
 
     if (isOpen) {
       gsap.set(panel, {
@@ -28,7 +28,7 @@ function ProductFilterPanel({
         height: 0,
         opacity: 0,
         y: -10,
-      })
+      });
 
       gsap.to(panel, {
         height: "auto",
@@ -36,7 +36,7 @@ function ProductFilterPanel({
         y: 0,
         duration: 0.4,
         ease: "power3.out",
-      })
+      });
     } else {
       gsap.to(panel, {
         height: 0,
@@ -44,9 +44,9 @@ function ProductFilterPanel({
         y: -10,
         duration: 0.25,
         ease: "power2.inOut",
-      })
+      });
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   return (
     <div
@@ -85,7 +85,7 @@ function ProductFilterPanel({
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {[150, 175, 200, 225, 250].map((price) => (
+              {[4500, 5000, 6000, 7000, 10000].map((price) => (
                 <button
                   key={price}
                   type="button"
@@ -96,9 +96,9 @@ function ProductFilterPanel({
                       : "bg-white text-neutral-600 hover:bg-neutral-100"
                   }`}
                 >
-                  {price === 250
+                  {price === 10000
                     ? "All prices"
-                    : `Under $${price}`}
+                    : `Under ₹${price.toLocaleString("en-IN")}`}
                 </button>
               ))}
             </div>
@@ -125,7 +125,7 @@ function ProductFilterPanel({
         <div className="mt-6 flex justify-end gap-3 border-t border-neutral-200 pt-5">
           <button
             type="button"
-            onClick={() => setMaxPrice(250)}
+            onClick={() => setMaxPrice(10000)}
             className="rounded-full px-5 py-2.5 text-sm font-semibold text-neutral-600 transition hover:bg-white"
           >
             Reset
@@ -141,7 +141,7 @@ function ProductFilterPanel({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ProductFilterPanel
+export default ProductFilterPanel;
