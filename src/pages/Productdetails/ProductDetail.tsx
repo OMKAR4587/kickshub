@@ -57,17 +57,14 @@ function ProductDetail() {
         ease: "power3.out",
       });
 
-      gsap.from(
-        ".product-info > p, .product-info > h1, .product-info > div",
-        {
-          opacity: 0,
-          y: 25,
-          duration: 0.6,
-          stagger: 0.08,
-          delay: 0.15,
-          ease: "power3.out",
-        }
-      );
+      gsap.from(".product-info > p, .product-info > h1, .product-info > div", {
+        opacity: 0,
+        y: 25,
+        duration: 0.6,
+        stagger: 0.08,
+        delay: 0.15,
+        ease: "power3.out",
+      });
     }, pageRef);
 
     return () => ctx.revert();
@@ -78,9 +75,7 @@ function ProductDetail() {
       <section className="py-24">
         <Container>
           <div className="mx-auto max-w-lg text-center">
-            <p className="text-sm text-neutral-500">
-              Loading product...
-            </p>
+            <p className="text-sm text-neutral-500">Loading product...</p>
           </div>
         </Container>
       </section>
@@ -151,29 +146,22 @@ function ProductDetail() {
               type="button"
               onClick={() => toggleWishlist(product.id)}
               aria-label={
-                wishlisted
-                  ? "Remove from wishlist"
-                  : "Add to wishlist"
+                wishlisted ? "Remove from wishlist" : "Add to wishlist"
               }
               className={`absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm transition hover:scale-105 ${
-                wishlisted
-                  ? "text-purple-600"
-                  : "text-neutral-700"
+                wishlisted ? "text-purple-600" : "text-neutral-700"
               }`}
             >
-              <Heart
-                size={18}
-                fill={wishlisted ? "currentColor" : "none"}
-              />
+              <Heart size={18} fill={wishlisted ? "currentColor" : "none"} />
             </button>
 
             <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-3xl" />
 
-            <div className="flex aspect-square items-center justify-center p-8 sm:p-12">
+            <div className="flex aspect-square items-center justify-center overflow-hidden">
               <img
                 src={product.image}
                 alt={product.name}
-                className="product-image relative z-10 w-full object-contain transition duration-500 hover:scale-105"
+                className="product-image relative z-10 h-full w-full object-contain transition duration-500 hover:scale-105"
               />
             </div>
           </div>
@@ -212,9 +200,7 @@ function ProductDetail() {
                   Select size
                 </p>
 
-                <span className="text-xs text-neutral-400">
-                  US
-                </span>
+                <span className="text-xs text-neutral-400">US</span>
               </div>
 
               <div className="grid grid-cols-5 gap-2">
@@ -268,18 +254,13 @@ function ProductDetail() {
             {/* Add to cart */}
             <button
               type="button"
-              disabled={
-                !product.inStock || selectedSize === null
-              }
+              disabled={!product.inStock || selectedSize === null}
               onClick={() => {
                 if (selectedSize === null) return;
 
                 addToCart(product, selectedSize, quantity);
 
-                showToast(
-                  `${product.name} added to your cart`,
-                  "success"
-                );
+                showToast(`${product.name} added to your cart`, "success");
               }}
               className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-black text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-lg disabled:cursor-not-allowed disabled:translate-y-0 disabled:bg-neutral-200 disabled:text-neutral-400"
             >

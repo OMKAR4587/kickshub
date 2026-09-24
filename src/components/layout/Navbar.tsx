@@ -9,7 +9,11 @@ import {
 
 import { useState } from "react"
 
-import { Link, NavLink } from "react-router-dom"
+import {
+  Link,
+  NavLink,
+  useNavigate,
+} from "react-router-dom"
 
 import { useCart } from "../../context/CartContext"
 import { useWishlist } from "../../context/WishlistContext"
@@ -18,6 +22,8 @@ import Container from "../ui/Container"
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const navigate = useNavigate()
 
   const { cartCount } = useCart()
   const { wishlist } = useWishlist()
@@ -29,10 +35,16 @@ function Navbar() {
     { name: "Sneakers", path: "/products" },
   ]
 
+  const handleSearch = () => {
+    setIsMenuOpen(false)
+    navigate("/products?focus=search")
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
       <Container>
         <nav className="flex h-13 items-center justify-between">
+
           {/* Logo */}
           <Link
             to="/"
@@ -62,10 +74,12 @@ function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden items-center gap-2 md:flex">
+
             {/* Search */}
             <button
               type="button"
               aria-label="Search"
+              onClick={handleSearch}
               className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
               <Search
@@ -99,7 +113,9 @@ function Navbar() {
 
               {wishlistCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-5 max-w-10 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[10px] font-bold leading-none text-white">
-                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                  {wishlistCount > 99
+                    ? "99+"
+                    : wishlistCount}
                 </span>
               )}
             </Link>
@@ -117,7 +133,9 @@ function Navbar() {
 
               {cartCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-5 max-w-10 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[10px] font-bold leading-none text-white">
-                  {cartCount > 99 ? "99+" : cartCount}
+                  {cartCount > 99
+                    ? "99+"
+                    : cartCount}
                 </span>
               )}
             </Link>
@@ -125,10 +143,12 @@ function Navbar() {
 
           {/* Mobile Actions */}
           <div className="flex items-center gap-1 md:hidden">
+
             {/* Search */}
             <button
               type="button"
               aria-label="Search"
+              onClick={handleSearch}
               className="rounded-full p-2.5 transition hover:bg-neutral-100"
             >
               <Search
@@ -150,7 +170,9 @@ function Navbar() {
 
               {wishlistCount > 0 && (
                 <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 max-w-8 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[9px] font-bold leading-none text-white">
-                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                  {wishlistCount > 99
+                    ? "99+"
+                    : wishlistCount}
                 </span>
               )}
             </Link>
@@ -168,7 +190,9 @@ function Navbar() {
 
               {cartCount > 0 && (
                 <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 max-w-8 items-center justify-center overflow-hidden rounded-full bg-purple-600 px-1 text-[9px] font-bold leading-none text-white">
-                  {cartCount > 99 ? "99+" : cartCount}
+                  {cartCount > 99
+                    ? "99+"
+                    : cartCount}
                 </span>
               )}
             </Link>
@@ -205,6 +229,7 @@ function Navbar() {
         {isMenuOpen && (
           <div className="border-t border-neutral-200 py-6 md:hidden">
             <div className="flex flex-col gap-5">
+
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
@@ -222,6 +247,17 @@ function Navbar() {
                 </NavLink>
               ))}
 
+              {/* Mobile Search */}
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="flex items-center gap-3 text-left text-base font-medium text-neutral-500 transition hover:text-black"
+              >
+                <Search size={18} />
+                Search
+              </button>
+
+              {/* Account */}
               <Link
                 to="/account"
                 onClick={() => setIsMenuOpen(false)}
@@ -231,6 +267,7 @@ function Navbar() {
                 Account
               </Link>
 
+              {/* Wishlist */}
               <Link
                 to="/wishlist"
                 onClick={() => setIsMenuOpen(false)}

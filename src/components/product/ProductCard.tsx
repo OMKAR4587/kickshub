@@ -65,7 +65,7 @@ function ProductCard({ product }: ProductCardProps) {
             <img
               src={product.image}
               alt={product.name}
-              className={`relative z-10 w-full object-contain transition-all duration-700 ease-out scale-90 group-hover:scale-100 group-hover:-rotate-2 ${
+              className={`relative z-10 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 group-hover:-rotate-2 ${
                 !product.inStock ? "opacity-50 grayscale" : ""
               }`}
             />

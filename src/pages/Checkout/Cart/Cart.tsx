@@ -1,25 +1,20 @@
-import { useEffect, useRef } from "react"
-import { Minus, Plus, Trash2 } from "lucide-react"
-import { Link } from "react-router-dom"
-import gsap from "gsap"
+import { useEffect, useRef } from "react";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import gsap from "gsap";
 import Container from "../../../components/ui/Container";
 import { useCart } from "../../../context/CartContext";
 import { useToast } from "../../../context/ToastContext";
 
 function Cart() {
-  const {
-    items,
-    cartTotal,
-    updateQuantity,
-    removeFromCart,
-  } = useCart()
+  const { items, cartTotal, updateQuantity, removeFromCart } = useCart();
 
-  const { showToast } = useToast()
+  const { showToast } = useToast();
 
-  const pageRef = useRef<HTMLDivElement | null>(null)
+  const pageRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (items.length === 0) return
+    if (items.length === 0) return;
 
     const ctx = gsap.context(() => {
       gsap.from(".cart-item", {
@@ -28,7 +23,7 @@ function Cart() {
         duration: 0.5,
         stagger: 0.08,
         ease: "power3.out",
-      })
+      });
 
       gsap.from(".cart-summary", {
         opacity: 0,
@@ -36,24 +31,21 @@ function Cart() {
         duration: 0.6,
         delay: 0.15,
         ease: "power3.out",
-      })
-    }, pageRef)
+      });
+    }, pageRef);
 
-    return () => ctx.revert()
-  }, [items.length])
+    return () => ctx.revert();
+  }, [items.length]);
 
   const handleRemove = (
     productId: string,
     size: number,
     productName: string,
   ) => {
-    removeFromCart(productId, size)
+    removeFromCart(productId, size);
 
-    showToast(
-      `${productName} removed from your cart`,
-      "success",
-    )
-  }
+    showToast(`${productName} removed from your cart`, "success");
+  };
 
   if (items.length === 0) {
     return (
@@ -61,10 +53,7 @@ function Cart() {
         <Container>
           <div className="mx-auto max-w-xl text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100">
-              <Trash2
-                size={28}
-                className="text-neutral-400"
-              />
+              <Trash2 size={28} className="text-neutral-400" />
             </div>
 
             <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-purple-600">
@@ -88,14 +77,11 @@ function Cart() {
           </div>
         </Container>
       </section>
-    )
+    );
   }
 
   return (
-    <section
-      ref={pageRef}
-      className="py-12 sm:py-16 lg:py-20"
-    >
+    <section ref={pageRef} className="py-12 sm:py-16 lg:py-20">
       <Container>
         {/* Header */}
         <div className="mb-10">
@@ -108,9 +94,7 @@ function Cart() {
           </h1>
 
           <p className="mt-3 text-sm text-neutral-500">
-            {items.length}{" "}
-            {items.length === 1 ? "item" : "items"} in your
-            cart
+            {items.length} {items.length === 1 ? "item" : "items"} in your cart
           </p>
         </div>
 
@@ -125,15 +109,14 @@ function Cart() {
                 {/* Product image */}
                 <Link
                   to={`/products/${item.product.id}`}
-                  className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#f5f7fb] transition hover:bg-neutral-100 sm:h-36 sm:w-36"
+                  className="flex h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-[#f5f7fb] transition hover:bg-neutral-100 sm:h-36 sm:w-36"
                 >
                   <img
                     src={item.product.image}
                     alt={item.product.name}
-                    className="h-full w-full object-contain p-2 transition duration-500 hover:scale-105"
+                    className="h-full w-full object-cover transition duration-500 hover:scale-105"
                   />
                 </Link>
-
                 {/* Product info */}
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex justify-between gap-4">
@@ -154,16 +137,15 @@ function Cart() {
                       </p>
 
                       <p className="mt-1 text-sm text-neutral-500">
-                        ${item.product.price} each
+                        ₹{item.product.price.toLocaleString("en-IN")} each
                       </p>
                     </div>
 
                     <p className="shrink-0 font-semibold text-neutral-900">
-                      $
-                      {(
-                        item.product.price *
-                        item.quantity
-                      ).toFixed(2)}
+                      ₹
+                      {(item.product.price * item.quantity).toLocaleString(
+                        "en-IN",
+                      )}
                     </p>
                   </div>
 
@@ -230,27 +212,22 @@ function Cart() {
 
           {/* Summary */}
           <aside className="cart-summary h-fit rounded-3xl bg-[#f8fafc] p-6 lg:sticky lg:top-24">
-            <h2 className="text-lg font-semibold">
-              Order summary
-            </h2>
+            <h2 className="text-lg font-semibold">Order summary</h2>
 
             <div className="mt-6 space-y-4 text-sm">
               <div className="flex justify-between text-neutral-500">
                 <span>Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>₹{cartTotal.toLocaleString("en-IN")}</span>
               </div>
-
               <div className="flex justify-between text-neutral-500">
                 <span>Shipping</span>
-                <span className="font-medium text-green-600">
-                  Free
-                </span>
+                <span className="font-medium text-green-600">Free</span>
               </div>
 
               <div className="border-t border-neutral-200 pt-4">
                 <div className="flex justify-between text-base font-bold text-neutral-900">
                   <span>Total</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>₹{cartTotal.toLocaleString("en-IN")}</span>
                 </div>
               </div>
             </div>
@@ -272,7 +249,7 @@ function Cart() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
 
-export default Cart
+export default Cart;

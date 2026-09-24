@@ -1,10 +1,28 @@
+import { useEffect, useState } from "react"
 import Container from "../ui/Container"
 import ProductCard from "../product/ProductCard"
-import { products } from "../../data/Product"
 import useScrollReveal from "../../hooks/useScrollReveal"
+import { getProducts } from "../../services/api"
+import type { Product } from "../../types/Product"
 
 function FeaturedProducts() {
-    const sectionRef = useScrollReveal();
+  const sectionRef = useScrollReveal()
+  const [products, setProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load products")
+        }
+
+        setProducts(data.products.slice(0, 4))
+      })
+      .catch((error) => {
+        console.error("Failed to load featured products:", error)
+      })
+  }, [])
+
   return (
     <section className="py-20">
       <Container>
@@ -22,7 +40,10 @@ function FeaturedProducts() {
           </p>
         </div>
 
-        <div ref={sectionRef} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          ref={sectionRef}
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {products.map((product) => (
             <ProductCard
               key={product.id}

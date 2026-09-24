@@ -1,22 +1,59 @@
-import { Heart, ShoppingBag, Trash2, ArrowUpRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import {
+  Heart,
+  ShoppingBag,
+  Trash2,
+  ArrowUpRight,
+} from "lucide-react"
 import { Link } from "react-router-dom"
 
 import Container from "../../components/ui/Container"
-import { products } from "../../data/Product"
 import { useWishlist } from "../../context/WishlistContext"
 import { useCart } from "../../context/CartContext"
 import { useToast } from "../../context/ToastContext"
+import { getProducts } from "../../services/api"
+import type { Product } from "../../types/Product"
 
 function Wishlist() {
   const { wishlist, toggleWishlist } = useWishlist()
   const { addToCart } = useCart()
   const { showToast } = useToast()
 
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => {
+        if (!data.success) {
+          throw new Error(
+            data.message || "Failed to load products",
+          )
+        }
+
+        setProducts(data.products)
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load products",
+        )
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
+
   const wishlistProducts = products.filter((product) =>
     wishlist.includes(product.id),
   )
 
-  const handleRemove = (productId: string, productName: string) => {
+  const handleRemove = (
+    productId: string,
+    productName: string,
+  ) => {
     toggleWishlist(productId)
 
     showToast(
@@ -25,9 +62,7 @@ function Wishlist() {
     )
   }
 
-  const handleAddToCart = (
-    product: (typeof products)[number],
-  ) => {
+  const handleAddToCart = (product: Product) => {
     if (!product.inStock) {
       showToast(
         "This product is currently out of stock",
@@ -46,11 +81,38 @@ function Wishlist() {
     )
   }
 
+  if (loading) {
+    return (
+      <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
+        <Container>
+          <div className="flex min-h-[360px] items-center justify-center">
+            <p className="text-neutral-500">
+              Loading wishlist...
+            </p>
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
+        <Container>
+          <div className="flex min-h-[360px] items-center justify-center">
+            <p className="text-red-500">
+              {error}
+            </p>
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
   return (
     <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
-      {/* Background accents */}
-
       <Container>
+
         {/* Header */}
         <div className="relative mb-12 flex flex-col justify-between gap-6 border-b border-neutral-200 pb-8 sm:flex-row sm:items-end">
           <div>
@@ -63,7 +125,10 @@ function Wishlist() {
             </div>
 
             <h1 className="text-5xl font-black leading-none tracking-[-0.05em] text-neutral-950 sm:text-6xl lg:text-7xl">
-              Wishlist<span className="text-purple-600">.</span>
+              Wishlist
+              <span className="text-purple-600">
+                .
+              </span>
             </h1>
 
             <p className="mt-5 max-w-md text-sm leading-6 text-neutral-500 sm:text-base">
@@ -96,8 +161,10 @@ function Wishlist() {
         {/* Empty State */}
         {wishlistProducts.length === 0 && (
           <div className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden rounded-[2rem] border border-neutral-200 bg-neutral-50 px-6 text-center">
+
             {/* Decorative circles */}
             <div className="absolute -left-20 -top-20 h-48 w-48 rounded-full border border-neutral-200" />
+
             <div className="absolute -bottom-24 -right-16 h-56 w-56 rounded-full border border-purple-200" />
 
             <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
@@ -133,13 +200,16 @@ function Wishlist() {
         {/* Products */}
         {wishlistProducts.length > 0 && (
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+
             {wishlistProducts.map((product) => (
               <article
                 key={product.id}
                 className="group"
               >
+
                 {/* Product image */}
                 <div className="relative aspect-[4/4.2] overflow-hidden rounded-[1.75rem] bg-neutral-100">
+
                   <Link
                     to={`/products/${product.id}`}
                     className="block h-full"
@@ -196,7 +266,9 @@ function Wishlist() {
 
                 {/* Product info */}
                 <div className="mt-5">
+
                   <div className="flex items-start justify-between gap-4">
+
                     <div className="min-w-0">
                       <Link
                         to={`/products/${product.id}`}
@@ -212,13 +284,15 @@ function Wishlist() {
                       </p>
                     </div>
 
+                    {/* INR */}
                     <p className="shrink-0 whitespace-nowrap text-sm font-bold text-neutral-950">
-                      ${product.price.toFixed(2)}
+                      ₹{product.price.toLocaleString("en-IN")}
                     </p>
                   </div>
 
                   {/* Bottom action */}
                   <div className="mt-4 flex items-center justify-between border-t border-neutral-200 pt-4">
+
                     <span
                       className={`text-xs font-semibold uppercase tracking-wider ${
                         product.inStock
@@ -248,6 +322,7 @@ function Wishlist() {
             ))}
           </div>
         )}
+
       </Container>
     </section>
   )

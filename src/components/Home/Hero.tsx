@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-import firstImg from '../../assets/products/air-runner.png';
-import secondImg from '../../assets/products/street-one.png';
-import ThirdImg from '../../assets/products/flux-01.png';
-import FourthImg from '../../assets/products/motion-x.png';
+import firstImg from "../../assets/products/air-runner.png";
+import secondImg from "../../assets/products/street-one.png";
+import ThirdImg from "../../assets/products/flux-01.png";
+import FourthImg from "../../assets/products/motion-x.png";
 
 import gsap from "gsap";
 
@@ -20,30 +20,30 @@ const heroShoes: HeroShoe[] = [
   {
     id: 1,
     name: "Air Runner",
-    image:firstImg,
+    image: firstImg,
     label: "New Drop",
-    price: "$180",
+    price: "₹6000",
   },
   {
     id: 2,
     name: "Street One",
-    image:secondImg,
+    image: secondImg,
     label: "Streetwear",
-    price: "$165",
+    price: "₹5500",
   },
   {
     id: 3,
     name: "Flux 01",
     image: ThirdImg,
     label: "Trending",
-    price: "$195",
+    price: "₹6500",
   },
   {
     id: 4,
     name: "Motion X",
     image: FourthImg,
     label: "Limited",
-    price: "$210",
+    price: "₹7000",
   },
 ];
 
@@ -199,10 +199,7 @@ function Hero() {
   }, [currentShoe]);
 
   return (
-    <section
-      ref={heroRef}
-      className="relative overflow-hidden bg-[#f8fafc]"
-    >
+    <section ref={heroRef} className="relative overflow-hidden bg-[#f8fafc]">
       {/* =========================
           BACKGROUND
       ========================== */}
@@ -286,9 +283,7 @@ function Hero() {
               "
             >
               <span className="block overflow-hidden">
-                <span className="hero-title-line block">
-                  Move
-                </span>
+                <span className="hero-title-line block">Move</span>
               </span>
 
               <span className="block overflow-hidden">
@@ -355,7 +350,6 @@ function Hero() {
                 "
               >
                 Shop the drop
-
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-neutral-950 transition-transform duration-300 group-hover:rotate-45 sm:h-7 sm:w-7">
                   <ArrowUpRight size={14} />
                 </span>
