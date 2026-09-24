@@ -100,7 +100,7 @@ function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         <p className="shrink-0 text-sm font-bold text-neutral-900">
-          ${product.price}
+          ₹{product.price.toLocaleString("en-IN")}
         </p>
       </div>
     </article>
