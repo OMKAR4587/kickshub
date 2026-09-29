@@ -1,11 +1,9 @@
-import { useState, type FormEvent } from "react"
 import {
   ArrowUpRight,
   Check,
   ChevronRight,
   Heart,
   LogOut,
-  Mail,
   Package,
   ShoppingBag,
   User,
@@ -18,17 +16,7 @@ import { useWishlist } from "../../context/WishlistContext"
 import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
 
-type Mode = "login" | "register"
-
 function Account() {
-  const [mode, setMode] = useState<Mode>("login")
-
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   const { cartCount } = useCart()
   const { wishlist } = useWishlist()
   const { showToast } = useToast()
@@ -37,78 +25,11 @@ function Account() {
     user,
     isAuthenticated,
     loading,
-    login,
-    register,
     logout,
   } = useAuth()
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault()
-
-    if (!email.trim() || !password) {
-      showToast(
-        "Please enter your email and password",
-        "warning",
-      )
-      return
-    }
-
-    if (mode === "register" && !name.trim()) {
-      showToast(
-        "Please enter your name",
-        "warning",
-      )
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      const result =
-        mode === "login"
-          ? await login(
-              email.trim(),
-              password,
-            )
-          : await register(
-              name.trim(),
-              email.trim(),
-              password,
-            )
-
-      if (!result.success) {
-        showToast(
-          result.message ||
-            (mode === "login"
-              ? "Login failed"
-              : "Registration failed"),
-          "error",
-        )
-
-        return
-      }
-
-      showToast(
-        mode === "login"
-          ? "Welcome back to KicksHub"
-          : "Your KicksHub account is ready",
-        "success",
-      )
-
-      setPassword("")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   const handleLogout = () => {
     logout()
-
-    setName("")
-    setEmail("")
-    setPassword("")
 
     showToast(
       "You've been logged out",
@@ -138,14 +59,13 @@ function Account() {
 
   /*
    * --------------------------------------------------
-   * AUTH VIEW
+   * NOT AUTHENTICATED
    * --------------------------------------------------
    */
 
   if (!isAuthenticated) {
     return (
-      <section className="relative min-h-[calc(100vh-52px)] overflow-hidden bg-white py-8 sm:py-16 lg:py-10">
-        {/* Background decoration */}
+      <section className="relative flex min-h-[calc(100vh-52px)] items-center justify-center overflow-hidden py-16">
         <div
           className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl"
           aria-hidden="true"
@@ -157,256 +77,35 @@ function Account() {
         />
 
         <Container>
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_460px] lg:gap-20">
-            {/* Left content */}
-            <div className="relative max-w-2xl">
-              <div className="mb-6 flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
-
-                <span className="text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
-                  KicksHub account
-                </span>
-              </div>
-
-              <h1 className="text-5xl font-black leading-[0.92] tracking-[-0.06em] text-neutral-950 sm:text-6xl lg:text-8xl">
-                {mode === "login" ? (
-                  <>
-                    Welcome
-                    <br />
-
-                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      back.
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    Start your
-                    <br />
-
-                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      rotation.
-                    </span>
-                  </>
-                )}
-              </h1>
-
-              <p className="mt-7 max-w-lg text-base leading-7 text-neutral-500 sm:text-lg">
-                {mode === "login"
-                  ? "Sign in to manage your orders, wishlist, and sneaker collection."
-                  : "Create your account and keep every favorite pair, order, and detail in one place."}
-              </p>
-
-              {/* Mini benefits */}
-              <div className="mt-10 grid max-w-lg grid-cols-2 gap-3 sm:gap-4">
-                <div className="rounded-2xl border border-neutral-200 bg-white p-4">
-                  <Package
-                    size={19}
-                    className="text-purple-600"
-                  />
-
-                  <p className="mt-5 text-sm font-semibold text-neutral-900">
-                    Track orders
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-neutral-500">
-                    Keep an eye on every delivery.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-neutral-200 bg-white p-4">
-                  <Heart
-                    size={19}
-                    className="text-purple-600"
-                  />
-
-                  <p className="mt-5 text-sm font-semibold text-neutral-900">
-                    Save favorites
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-neutral-500">
-                    Your wishlist stays with you.
-                  </p>
-                </div>
-              </div>
+          <div className="mx-auto max-w-lg text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-950 text-white">
+              <User size={25} />
             </div>
 
-            {/* Auth card */}
-            <div className="relative">
-              <div className="rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-[0_25px_80px_rgba(0,0,0,0.07)] sm:p-8">
-                {/* Tabs */}
-                <div className="flex rounded-full bg-neutral-100 p-1">
-                  <button
-                    type="button"
-                    onClick={() => setMode("login")}
-                    className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
-                      mode === "login"
-                        ? "bg-white text-neutral-950 shadow-sm"
-                        : "text-neutral-500 hover:text-neutral-900"
-                    }`}
-                  >
-                    Sign in
-                  </button>
+            <p className="mt-7 text-xs font-bold uppercase tracking-[0.22em] text-purple-600">
+              KicksHub account
+            </p>
 
-                  <button
-                    type="button"
-                    onClick={() => setMode("register")}
-                    className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
-                      mode === "register"
-                        ? "bg-white text-neutral-950 shadow-sm"
-                        : "text-neutral-500 hover:text-neutral-900"
-                    }`}
-                  >
-                    Create account
-                  </button>
-                </div>
+            <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-neutral-950 sm:text-5xl">
+              Sign in to your account.
+            </h1>
 
-                <div className="mt-8">
-                  <h2 className="text-2xl font-black tracking-tight text-neutral-950">
-                    {mode === "login"
-                      ? "Sign in"
-                      : "Create account"}
-                  </h2>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-neutral-500">
+              Access your wishlist, cart, profile, and
+              future orders from one place.
+            </p>
 
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    {mode === "login"
-                      ? "Enter your details to continue."
-                      : "It only takes a moment to get started."}
-                  </p>
-                </div>
+            <Link
+              to="/"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-neutral-950 px-7 py-4 text-sm font-semibold text-white transition hover:bg-purple-600"
+            >
+              Continue shopping
 
-                <form
-                  onSubmit={handleSubmit}
-                  className="mt-7 space-y-5"
-                >
-                  {/* Name */}
-                  {mode === "register" && (
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500"
-                      >
-                        Full name
-                      </label>
-
-                      <div className="relative">
-                        <User
-                          size={17}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
-                        />
-
-                        <input
-                          id="name"
-                          type="text"
-                          value={name}
-                          onChange={(event) =>
-                            setName(event.target.value)
-                          }
-                          placeholder="Your name"
-                          disabled={isSubmitting}
-                          className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Email */}
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500"
-                    >
-                      Email
-                    </label>
-
-                    <div className="relative">
-                      <Mail
-                        size={17}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
-                      />
-
-                      <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) =>
-                          setEmail(event.target.value)
-                        }
-                        placeholder="you@example.com"
-                        disabled={isSubmitting}
-                        className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <label
-                        htmlFor="password"
-                        className="block text-xs font-bold uppercase tracking-wider text-neutral-500"
-                      >
-                        Password
-                      </label>
-
-                      {mode === "login" && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            showToast(
-                              "Password reset will be added later.",
-                              "info",
-                            )
-                          }
-                          className="text-xs font-semibold text-purple-600 hover:text-purple-700"
-                        >
-                          Forgot password?
-                        </button>
-                      )}
-                    </div>
-
-                    <input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(event) =>
-                        setPassword(event.target.value)
-                      }
-                      placeholder="••••••••"
-                      disabled={isSubmitting}
-                      className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3.5 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-                    />
-                  </div>
-
-                  {/* Submit */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-neutral-950 px-6 py-4 text-sm font-semibold text-white transition hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSubmitting
-                      ? "Please wait..."
-                      : mode === "login"
-                        ? "Sign in"
-                        : "Create account"}
-
-                    {!isSubmitting && (
-                      <ArrowUpRight
-                        size={17}
-                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      />
-                    )}
-                  </button>
-                </form>
-
-                <div className="mt-6 flex items-center gap-3 text-xs text-neutral-400">
-                  <span className="h-px flex-1 bg-neutral-200" />
-
-                  Secure account
-
-                  <span className="h-px flex-1 bg-neutral-200" />
-                </div>
-              </div>
-            </div>
+              <ArrowUpRight
+                size={17}
+                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+            </Link>
           </div>
         </Container>
       </section>
