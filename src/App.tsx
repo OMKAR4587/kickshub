@@ -7,6 +7,7 @@ import Checkout from "./pages/Checkout/Checkout";
 import Account from "./pages/Account/Account";
 import ProductDetail from "./pages/Productdetails/ProductDetail";
 import Wishlist from "./pages/wishlist/Wishlist";
+import AuthModal from "./components/auth/AuthModel";
 function App() {
   return (
     <BrowserRouter>
@@ -18,9 +19,10 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/account" element={<Account />} />
         </Route>
-        <Route path="/account" element={<Account />} />
       </Routes>
+       <AuthModal />
     </BrowserRouter>
   );
 }

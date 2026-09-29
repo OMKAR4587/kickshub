@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type FormEvent } from "react"
 import {
   ArrowUpRight,
   Check,
@@ -16,27 +16,38 @@ import Container from "../../components/ui/Container"
 import { useCart } from "../../context/CartContext"
 import { useWishlist } from "../../context/WishlistContext"
 import { useToast } from "../../context/ToastContext"
+import { useAuth } from "../../context/AuthContext"
 
 type Mode = "login" | "register"
 
 function Account() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [mode, setMode] = useState<Mode>("login")
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const { cartCount } = useCart()
   const { wishlist } = useWishlist()
   const { showToast } = useToast()
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
+  const {
+    user,
+    isAuthenticated,
+    loading,
+    login,
+    register,
+    logout,
+  } = useAuth()
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault()
 
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       showToast(
         "Please enter your email and password",
         "warning",
@@ -52,30 +63,86 @@ function Account() {
       return
     }
 
-    setIsLoggedIn(true)
+    setIsSubmitting(true)
 
-    showToast(
-      mode === "login"
-        ? "Welcome back to KicksHub"
-        : "Your KicksHub account is ready",
-      "success",
-    )
+    try {
+      const result =
+        mode === "login"
+          ? await login(
+              email.trim(),
+              password,
+            )
+          : await register(
+              name.trim(),
+              email.trim(),
+              password,
+            )
+
+      if (!result.success) {
+        showToast(
+          result.message ||
+            (mode === "login"
+              ? "Login failed"
+              : "Registration failed"),
+          "error",
+        )
+
+        return
+      }
+
+      showToast(
+        mode === "login"
+          ? "Welcome back to KicksHub"
+          : "Your KicksHub account is ready",
+        "success",
+      )
+
+      setPassword("")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleLogout = () => {
-    setIsLoggedIn(false)
+    logout()
+
     setName("")
     setEmail("")
     setPassword("")
 
-    showToast("You've been logged out", "info")
+    showToast(
+      "You've been logged out",
+      "info",
+    )
   }
 
-  /* --------------------------------------------------
-     AUTH VIEW
-  -------------------------------------------------- */
+  /*
+   * --------------------------------------------------
+   * AUTH LOADING
+   * --------------------------------------------------
+   */
 
-  if (!isLoggedIn) {
+  if (loading) {
+    return (
+      <section className="flex min-h-[calc(100vh-52px)] items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-600" />
+
+          <p className="mt-4 text-sm text-neutral-500">
+            Loading your account...
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  /*
+   * --------------------------------------------------
+   * AUTH VIEW
+   * --------------------------------------------------
+   */
+
+  if (!isAuthenticated) {
     return (
       <section className="relative min-h-[calc(100vh-52px)] overflow-hidden bg-white py-8 sm:py-16 lg:py-10">
         {/* Background decoration */}
@@ -106,6 +173,7 @@ function Account() {
                   <>
                     Welcome
                     <br />
+
                     <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                       back.
                     </span>
@@ -114,6 +182,7 @@ function Account() {
                   <>
                     Start your
                     <br />
+
                     <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                       rotation.
                     </span>
@@ -233,7 +302,8 @@ function Account() {
                             setName(event.target.value)
                           }
                           placeholder="Your name"
-                          className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10"
+                          disabled={isSubmitting}
+                          className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     </div>
@@ -262,7 +332,8 @@ function Account() {
                           setEmail(event.target.value)
                         }
                         placeholder="you@example.com"
-                        className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10"
+                        disabled={isSubmitting}
+                        className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                       />
                     </div>
                   </div>
@@ -282,7 +353,7 @@ function Account() {
                           type="button"
                           onClick={() =>
                             showToast(
-                              "Password reset will be available with the backend.",
+                              "Password reset will be added later.",
                               "info",
                             )
                           }
@@ -301,23 +372,29 @@ function Account() {
                         setPassword(event.target.value)
                       }
                       placeholder="••••••••"
-                      className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3.5 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10"
+                      disabled={isSubmitting}
+                      className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3.5 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                     />
                   </div>
 
                   {/* Submit */}
                   <button
                     type="submit"
-                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-neutral-950 px-6 py-4 text-sm font-semibold text-white transition hover:bg-purple-600"
+                    disabled={isSubmitting}
+                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-neutral-950 px-6 py-4 text-sm font-semibold text-white transition hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {mode === "login"
-                      ? "Sign in"
-                      : "Create account"}
+                    {isSubmitting
+                      ? "Please wait..."
+                      : mode === "login"
+                        ? "Sign in"
+                        : "Create account"}
 
-                    <ArrowUpRight
-                      size={17}
-                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
+                    {!isSubmitting && (
+                      <ArrowUpRight
+                        size={17}
+                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                    )}
                   </button>
                 </form>
 
@@ -336,9 +413,11 @@ function Account() {
     )
   }
 
-  /* --------------------------------------------------
-     LOGGED-IN ACCOUNT
-  -------------------------------------------------- */
+  /*
+   * --------------------------------------------------
+   * LOGGED-IN ACCOUNT
+   * --------------------------------------------------
+   */
 
   return (
     <section className="relative overflow-hidden py-14 sm:py-20 lg:py-24">
@@ -366,11 +445,13 @@ function Account() {
             </div>
 
             <h1 className="text-5xl font-black leading-none tracking-[-0.05em] text-neutral-950 sm:text-6xl">
-              My Account<span className="text-purple-600">.</span>
+              My Account
+              <span className="text-purple-600">.</span>
             </h1>
 
             <p className="mt-4 text-sm text-neutral-500 sm:text-base">
-              Welcome back{email ? `, ${email}` : ""}.
+              Welcome back
+              {user?.name ? `, ${user.name}` : ""}.
             </p>
           </div>
 
@@ -479,7 +560,7 @@ function Account() {
                 </span>
 
                 <span className="text-right text-sm font-semibold text-neutral-900">
-                  {name || "KicksHub Member"}
+                  {user?.name || "KicksHub Member"}
                 </span>
               </div>
 
@@ -489,7 +570,7 @@ function Account() {
                 </span>
 
                 <span className="max-w-[60%] truncate text-right text-sm font-semibold text-neutral-900">
-                  {email}
+                  {user?.email}
                 </span>
               </div>
 

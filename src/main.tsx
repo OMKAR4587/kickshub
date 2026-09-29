@@ -5,9 +5,11 @@ import { WishlistProvider } from "./context/WishlistContext.tsx";
 import { ToastProvider } from "./context/ToastContext"
 import "./index.css";
 import App from "./App.tsx";
+import AuthProvider from "./context/AuthContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <AuthProvider>
     <CartProvider>
       <WishlistProvider>
         <ToastProvider>
@@ -15,5 +17,6 @@ createRoot(document.getElementById("root")!).render(
         </ToastProvider>
       </WishlistProvider>
     </CartProvider>
+    </AuthProvider>
   </StrictMode>,
 );
