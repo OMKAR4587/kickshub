@@ -1,19 +1,22 @@
-import { useEffect, useRef } from "react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useRef } from "react";
 
-gsap.registerPlugin(ScrollTrigger)
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function useScrollReveal() {
-  const ref = useRef<HTMLDivElement | null>(null)
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const element = ref.current
+    const element = ref.current;
 
-    if (!element) return
+    if (!element) return;
 
     const ctx = gsap.context(() => {
-      const items = element.children
+      const items = element.children;
+
+      if (!items.length) return;
 
       gsap.fromTo(
         items,
@@ -35,15 +38,15 @@ function useScrollReveal() {
             once: true,
           },
         },
-      )
-    }, element)
+      );
+    }, element);
 
     return () => {
-      ctx.revert()
-    }
-  }, [])
+      ctx.revert();
+    };
+  });
 
-  return ref
+  return ref;
 }
 
-export default useScrollReveal
+export default useScrollReveal;
