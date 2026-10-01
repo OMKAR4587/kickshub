@@ -122,7 +122,7 @@ function ProductDetail() {
   };
 
   return (
-    <section ref={pageRef} className="py-12 sm:py-16 lg:py-20">
+    <section ref={pageRef} className="py-6 sm:py-8 lg:py-10">
       <Container>
         {/* Back */}
         <Link
