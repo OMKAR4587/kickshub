@@ -4,35 +4,55 @@ import {
   findProductById,
 } from "../services/product.service.js";
 
-export function getProducts(_req: Request, res: Response) {
-  res.json({
-    success: true,
-    count: findAllProducts().length,
-    products: findAllProducts(),
-  });
+export async function getProducts(_req: Request, res: Response) {
+  try {
+    const products = await findAllProducts();
+
+    res.json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch products",
+    });
+  }
 }
 
-export function getProductById(req: Request, res: Response) {
-  const { id } = req.params;
+export async function getProductById(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
 
-  if (typeof id !== "string") {
-    return res.status(400).json({
+    if (typeof id !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID",
+      });
+    }
+
+    const product = await findProductById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error("Failed to fetch product:", error);
+
+    res.status(500).json({
       success: false,
-      message: "Invalid product ID",
+      message: "Failed to fetch product",
     });
   }
-
-  const product = findProductById(id);
-
-  if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: "Product not found",
-    });
-  }
-
-  res.json({
-    success: true,
-    product,
-  });
 }

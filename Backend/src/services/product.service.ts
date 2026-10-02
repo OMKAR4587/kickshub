@@ -1,9 +1,17 @@
-import { products } from "../data/product.js";
+import { prisma } from "../lib/prisma.js";
 
-export function findAllProducts() {
-  return products;
+export async function findAllProducts() {
+  return prisma.product.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 }
 
-export function findProductById(id: string) {
-  return products.find((product) => product.id === id);
+export async function findProductById(id: string) {
+  return prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
 }
