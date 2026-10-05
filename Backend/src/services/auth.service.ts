@@ -1,15 +1,19 @@
-import { users } from "../data/user.js";
+import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { generateToken } from "../utils/jwt.js";
 
 export async function registerUser(
   name: string,
   email: string,
-  password: string
+  password: string,
 ) {
-  const existingUser = users.find(
-    (user) => user.email.toLowerCase() === email.toLowerCase()
-  );
+  const normalizedEmail = email.toLowerCase();
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: normalizedEmail,
+    },
+  });
 
   if (existingUser) {
     throw new Error("User already exists");
@@ -17,14 +21,13 @@ export async function registerUser(
 
   const hashedPassword = await hashPassword(password);
 
-  const user = {
-    id: crypto.randomUUID(),
-    name,
-    email: email.toLowerCase(),
-    password: hashedPassword,
-  };
-
-  users.push(user);
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email: normalizedEmail,
+      password: hashedPassword,
+    },
+  });
 
   const token = generateToken({
     userId: user.id,
@@ -43,11 +46,15 @@ export async function registerUser(
 
 export async function loginUser(
   email: string,
-  password: string
+  password: string,
 ) {
-  const user = users.find(
-    (user) => user.email.toLowerCase() === email.toLowerCase()
-  );
+  const normalizedEmail = email.toLowerCase();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: normalizedEmail,
+    },
+  });
 
   if (!user) {
     throw new Error("Invalid email or password");
@@ -55,7 +62,7 @@ export async function loginUser(
 
   const validPassword = await comparePassword(
     password,
-    user.password
+    user.password,
   );
 
   if (!validPassword) {
@@ -77,6 +84,15 @@ export async function loginUser(
   };
 }
 
-export function getUserById(id: string) {
-  return users.find((user) => user.id === id);
+export async function getUserById(id: string) {
+  return prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
 }

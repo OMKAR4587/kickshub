@@ -67,7 +67,7 @@ export async function login(
   }
 }
 
-export function me(req: Request, res: Response) {
+export async function me(req: Request, res: Response) {
   if (!req.user) {
     return res.status(401).json({
       success: false,
@@ -75,7 +75,7 @@ export function me(req: Request, res: Response) {
     });
   }
 
-  const user = getUserById(req.user.userId);
+  const user = await getUserById(req.user.userId);
 
   if (!user) {
     return res.status(404).json({
