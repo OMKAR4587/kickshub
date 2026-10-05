@@ -142,3 +142,54 @@ export async function clearCartApi(token: string) {
 
   return response.json();
 }
+
+export async function getWishlist(token: string) {
+  const response = await fetch(
+    "http://localhost:5000/api/wishlist",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.json();
+}
+
+export async function addWishlistItem(
+  token: string,
+  productId: string,
+) {
+  const response = await fetch(
+    "http://localhost:5000/api/wishlist",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        productId,
+      }),
+    },
+  );
+
+  return response.json();
+}
+
+export async function removeWishlistItem(
+  token: string,
+  productId: string,
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/wishlist/${productId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.json();
+}

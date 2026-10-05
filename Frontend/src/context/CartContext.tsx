@@ -34,10 +34,7 @@ type CartContextType = {
     size: number,
     quantity: number,
   ) => Promise<void>;
-  removeFromCart: (
-    productId: string,
-    size: number,
-  ) => Promise<void>;
+  removeFromCart: (productId: string, size: number) => Promise<void>;
   updateQuantity: (
     productId: string,
     size: number,
@@ -46,17 +43,13 @@ type CartContextType = {
   clearCart: () => Promise<void>;
 };
 
-const CartContext = createContext<CartContextType | undefined>(
-  undefined,
-);
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
 type CartProviderProps = {
   children: ReactNode;
 };
 
-export function CartProvider({
-  children,
-}: CartProviderProps) {
+export function CartProvider({ children }: CartProviderProps) {
   const { token, isAuthenticated } = useAuth();
 
   const [items, setItems] = useState<CartItem[]>([]);
@@ -71,6 +64,10 @@ export function CartProvider({
     }
 
     async function loadCart() {
+      if (!token) {
+        return;
+      }
+
       try {
         const data = await getCart(token);
 
@@ -78,8 +75,7 @@ export function CartProvider({
           return;
         }
 
-        const databaseItems =
-          data.cart?.items ?? [];
+        const databaseItems = data.cart?.items ?? [];
 
         setItems(
           databaseItems.map((item: any) => ({
@@ -110,12 +106,7 @@ export function CartProvider({
     }
 
     try {
-      const data = await addCartItem(
-        token,
-        product.id,
-        size,
-        quantity,
-      );
+      const data = await addCartItem(token, product.id, size, quantity);
 
       if (!data.success) {
         return;
@@ -126,14 +117,12 @@ export function CartProvider({
       setItems((currentItems) => {
         const existingItem = currentItems.find(
           (currentItem) =>
-            currentItem.product.id === product.id &&
-            currentItem.size === size,
+            currentItem.product.id === product.id && currentItem.size === size,
         );
 
         if (existingItem) {
           return currentItems.map((currentItem) =>
-            currentItem.product.id === product.id &&
-            currentItem.size === size
+            currentItem.product.id === product.id && currentItem.size === size
               ? {
                   ...currentItem,
                   id: item.id,
@@ -161,18 +150,14 @@ export function CartProvider({
   /*
    * Remove item from PostgreSQL cart.
    */
-  const removeFromCart = async (
-    productId: string,
-    size: number,
-  ) => {
+  const removeFromCart = async (productId: string, size: number) => {
     if (!token) {
       return;
     }
 
     const item = items.find(
       (currentItem) =>
-        currentItem.product.id === productId &&
-        currentItem.size === size,
+        currentItem.product.id === productId && currentItem.size === size,
     );
 
     if (!item?.id) {
@@ -180,10 +165,7 @@ export function CartProvider({
     }
 
     try {
-      const data = await removeCartItem(
-        token,
-        item.id,
-      );
+      const data = await removeCartItem(token, item.id);
 
       if (!data.success) {
         return;
@@ -193,16 +175,12 @@ export function CartProvider({
         currentItems.filter(
           (currentItem) =>
             !(
-              currentItem.product.id === productId &&
-              currentItem.size === size
+              currentItem.product.id === productId && currentItem.size === size
             ),
         ),
       );
     } catch (error) {
-      console.error(
-        "Failed to remove cart item:",
-        error,
-      );
+      console.error("Failed to remove cart item:", error);
     }
   };
 
@@ -220,8 +198,7 @@ export function CartProvider({
 
     const item = items.find(
       (currentItem) =>
-        currentItem.product.id === productId &&
-        currentItem.size === size,
+        currentItem.product.id === productId && currentItem.size === size,
     );
 
     if (!item?.id) {
@@ -234,11 +211,7 @@ export function CartProvider({
     }
 
     try {
-      const data = await updateCartItem(
-        token,
-        item.id,
-        quantity,
-      );
+      const data = await updateCartItem(token, item.id, quantity);
 
       if (!data.success) {
         return;
@@ -246,8 +219,7 @@ export function CartProvider({
 
       setItems((currentItems) =>
         currentItems.map((currentItem) =>
-          currentItem.product.id === productId &&
-          currentItem.size === size
+          currentItem.product.id === productId && currentItem.size === size
             ? {
                 ...currentItem,
                 quantity,
@@ -256,10 +228,7 @@ export function CartProvider({
         ),
       );
     } catch (error) {
-      console.error(
-        "Failed to update cart item:",
-        error,
-      );
+      console.error("Failed to update cart item:", error);
     }
   };
 
@@ -285,21 +254,14 @@ export function CartProvider({
   };
 
   const cartCount = useMemo(
-    () =>
-      items.reduce(
-        (total, item) => total + item.quantity,
-        0,
-      ),
+    () => items.reduce((total, item) => total + item.quantity, 0),
     [items],
   );
 
   const cartTotal = useMemo(
     () =>
       items.reduce(
-        (total, item) =>
-          total +
-          Number(item.product.price) *
-            item.quantity,
+        (total, item) => total + Number(item.product.price) * item.quantity,
         0,
       ),
     [items],
@@ -315,20 +277,14 @@ export function CartProvider({
     clearCart,
   };
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
   const context = useContext(CartContext);
 
   if (!context) {
-    throw new Error(
-      "useCart must be used inside CartProvider",
-    );
+    throw new Error("useCart must be used inside CartProvider");
   }
 
   return context;
