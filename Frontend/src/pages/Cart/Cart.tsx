@@ -155,12 +155,12 @@ function Cart() {
                       </p>
 
                       <p className="mt-1 text-sm text-neutral-500">
-                        ${item.product.price} each
+                        ₹{item.product.price} each
                       </p>
                     </div>
 
                     <p className="shrink-0 font-semibold text-neutral-900">
-                      $
+                      ₹
                       {(
                         item.product.price *
                         item.quantity
@@ -238,7 +238,7 @@ function Cart() {
             <div className="mt-6 space-y-4 text-sm">
               <div className="flex justify-between text-neutral-500">
                 <span>Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>₹{cartTotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-neutral-500">
@@ -251,7 +251,7 @@ function Cart() {
               <div className="border-t border-neutral-200 pt-4">
                 <div className="flex justify-between text-base font-bold text-neutral-900">
                   <span>Total</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>₹{cartTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>

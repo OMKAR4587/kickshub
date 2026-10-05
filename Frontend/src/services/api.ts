@@ -61,3 +61,84 @@ export async function getCurrentUser(token: string) {
   return response.json()
 }
 
+export async function getCart(token: string) {
+  const response = await fetch("http://localhost:5000/api/cart", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.json();
+}
+
+export async function addCartItem(
+  token: string,
+  productId: string,
+  size: number,
+  quantity: number,
+) {
+  const response = await fetch("http://localhost:5000/api/cart", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      productId,
+      size,
+      quantity,
+    }),
+  });
+
+  return response.json();
+}
+
+export async function updateCartItem(
+  token: string,
+  itemId: string,
+  quantity: number,
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/cart/${itemId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        quantity,
+      }),
+    },
+  );
+
+  return response.json();
+}
+
+export async function removeCartItem(
+  token: string,
+  itemId: string,
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/cart/${itemId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.json();
+}
+
+export async function clearCartApi(token: string) {
+  const response = await fetch("http://localhost:5000/api/cart", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.json();
+}
