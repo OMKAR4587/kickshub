@@ -55,3 +55,21 @@ export async function createOrder(userId: string) {
 
   return order;
 }
+
+export async function getOrders(userId: string) {
+  return prisma.order.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  });
+}

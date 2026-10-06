@@ -187,7 +187,7 @@ function Checkout() {
 
           <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-neutral-950 sm:text-5xl lg:text-6xl">
             Finish your
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               {" "}
               move.
             </span>
@@ -478,7 +478,7 @@ function Checkout() {
               </div>
 
               {/* Products */}
-              <div className="max-h-[430px] space-y-5 overflow-auto p-6">
+              <div className="max-h-107.5 space-y-5 overflow-auto p-6">
                 {items.map((item) => (
                   <div
                     key={`${item.product.id}-${item.size}`}

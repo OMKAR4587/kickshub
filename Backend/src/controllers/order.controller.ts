@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { createOrder } from "../services/order.service.js";
+import { createOrder,getOrders } from "../services/order.service.js";
 
 type AuthenticatedRequest = Request & {
   user?: {
@@ -47,6 +47,29 @@ export async function createOrderController(
     return res.status(500).json({
       success: false,
       message: "Failed to create order",
+    });
+  }
+}
+
+export async function getOrdersController(
+  req: AuthenticatedRequest,
+  res: Response,
+) {
+  try {
+    const userId = getUserId(req);
+
+    const orders = await getOrders(userId);
+
+    return res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
     });
   }
 }
