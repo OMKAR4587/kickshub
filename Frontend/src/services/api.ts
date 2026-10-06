@@ -193,3 +193,17 @@ export async function removeWishlistItem(
 
   return response.json();
 }
+
+export async function createOrder(token: string) {
+  const response = await fetch(
+    "http://localhost:5000/api/orders",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.json();
+}
