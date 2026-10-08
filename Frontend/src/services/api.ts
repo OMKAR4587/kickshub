@@ -217,6 +217,7 @@ export async function getOrders(token: string) {
       },
     },
   );
-
-  return response.json();
+   response.json();
+   console.log(response)
+  return response
 }

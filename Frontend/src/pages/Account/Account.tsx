@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { Link } from "react-router-dom";
 
 import {
@@ -41,6 +42,7 @@ type Order = {
 function Account() {
   const {
     user,
+    token,
     loading,
     isAuthenticated,
     openAuthModal,
@@ -48,7 +50,9 @@ function Account() {
   } = useAuth();
 
   const { cartCount } = useCart();
+
   const { wishlist } = useWishlist();
+
   const { showToast } = useToast();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -63,12 +67,11 @@ function Account() {
   useEffect(() => {
     if (!isAuthenticated) {
       setOrders([]);
+      setOrdersLoading(false);
       return;
     }
 
     async function loadOrders() {
-      const token = localStorage.getItem("kickshub_token");
-
       if (!token) {
         return;
       }
@@ -78,11 +81,14 @@ function Account() {
 
         const data = await getOrders(token);
 
+        console.log("Orders response:", data);
+
         if (!data.success) {
           showToast(
             data.message || "Failed to load orders",
             "error",
           );
+
           return;
         }
 
@@ -103,7 +109,7 @@ function Account() {
     }
 
     loadOrders();
-  }, [isAuthenticated, showToast]);
+  }, [isAuthenticated, token]);
 
   /*
    * ============================================================
@@ -338,7 +344,10 @@ function Account() {
             ORDER HISTORY
         ======================================================= */}
 
-        <div className="mt-8">
+        <div
+          id="order-history"
+          className="mt-8"
+        >
           <div className="mb-4 flex items-end justify-between">
             <div>
               <h2 className="text-lg font-bold tracking-tight text-neutral-950">
@@ -393,6 +402,7 @@ function Account() {
                   key={order.id}
                   className="overflow-hidden rounded-2xl border border-neutral-200 bg-white"
                 >
+
                   {/* Order header */}
 
                   <div className="flex flex-col gap-4 border-b border-neutral-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
