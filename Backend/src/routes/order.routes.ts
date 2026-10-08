@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import {
   createOrderController,
-  getOrdersController
+  getOrdersController,
 } from "../controllers/order.controller.js";
 
 import { requireAuth } from "../middleware/auth.middleware.js";
@@ -12,6 +12,6 @@ const router = Router();
 router.use(requireAuth);
 
 router.post("/", createOrderController);
-router.get("/", createOrderController);
+router.get("/", getOrdersController);
 
 export default router;
