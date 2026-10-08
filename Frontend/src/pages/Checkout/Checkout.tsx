@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { Link } from "react-router-dom";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,10 +21,10 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 
-import { createOrder } from "../../services/api";
+import { createCheckoutSession } from "../../services/api";
 
 function Checkout() {
-  const { items, cartTotal, clearCart } = useCart();
+  const { items, cartTotal } = useCart();
   const { token } = useAuth();
   const { showToast } = useToast();
 
@@ -42,35 +44,33 @@ function Checkout() {
       return;
     }
 
+    if (items.length === 0) {
+      showToast("Your cart is empty", "error");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const data = await createOrder(token);
+      const data = await createCheckoutSession(token);
 
-      if (!data.success) {
+      if (!data.success || !data.url) {
         showToast(
-          data.message || "Failed to place order",
+          data.message || "Unable to start payment",
           "error",
         );
         return;
       }
 
-      await clearCart();
-
-      setIsSubmitted(true);
-
-      showToast(
-        "Order placed successfully",
-        "success",
-      );
+      window.location.href = data.url;
     } catch (error) {
       console.error(
-        "Failed to place order:",
+        "Failed to start checkout:",
         error,
       );
 
       showToast(
-        "Something went wrong. Please try again.",
+        "Unable to start payment. Please try again.",
         "error",
       );
     } finally {
@@ -131,8 +131,8 @@ function Checkout() {
             </h1>
 
             <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-neutral-500">
-              Your order has been created successfully.
-              Your kicks are now in the queue.
+              Your payment was successful and your order
+              is now being processed.
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -210,8 +210,8 @@ function Checkout() {
 
           <div className="h-px w-16 bg-neutral-200" />
 
-          <div className="flex items-center gap-2 text-sm font-medium text-neutral-400">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white text-xs">
+          <div className="flex items-center gap-2 text-sm font-bold text-neutral-950">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
               2
             </span>
             Payment
@@ -416,8 +416,7 @@ function Checkout() {
                   </p>
 
                   <p className="mt-1 text-sm leading-6 text-neutral-500">
-                    Stripe payment processing will be
-                    connected here next.
+                    Secure payment powered by Stripe.
                   </p>
                 </div>
               </div>
@@ -432,7 +431,7 @@ function Checkout() {
               {isSubmitting ? (
                 <>
                   <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Placing order...
+                  Redirecting to payment...
                 </>
               ) : (
                 <>
@@ -502,15 +501,11 @@ function Checkout() {
                       </p>
 
                       <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
-                        <span>
-                          Size {item.size}
-                        </span>
+                        <span>Size {item.size}</span>
 
                         <span className="h-1 w-1 rounded-full bg-neutral-300" />
 
-                        <span>
-                          Qty {item.quantity}
-                        </span>
+                        <span>Qty {item.quantity}</span>
                       </div>
 
                       <p className="mt-3 text-sm font-bold text-neutral-950">
@@ -536,13 +531,10 @@ function Checkout() {
 
                     <span className="font-medium text-neutral-900">
                       ₹
-                      {cartTotal.toLocaleString(
-                        "en-IN",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}
+                      {cartTotal.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
 
@@ -563,13 +555,10 @@ function Checkout() {
 
                         <p className="mt-1 text-2xl font-black tracking-tight text-neutral-950">
                           ₹
-                          {cartTotal.toLocaleString(
-                            "en-IN",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            },
-                          )}
+                          {cartTotal.toLocaleString("en-IN", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </p>
                       </div>
 

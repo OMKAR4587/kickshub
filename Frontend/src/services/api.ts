@@ -220,3 +220,17 @@ export async function getOrders(token: string) {
 
   return response.json();
 }
+
+export async function createCheckoutSession(token: string) {
+  const response = await fetch(
+    "http://localhost:5000/api/payments/create-checkout-session",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.json();
+}

@@ -1,4 +1,4 @@
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -7,4 +7,6 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET || "kickshub_dev_secret",
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
   databaseUrl: process.env.DATABASE_URL!,
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY!,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
 };
