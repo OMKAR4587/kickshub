@@ -22,8 +22,7 @@ export async function createCheckoutSession(userId: string) {
   const items = cart.items;
 
   const total = items.reduce(
-    (sum, item) =>
-      sum + Number(item.product.price) * item.quantity,
+    (sum, item) => sum + Number(item.product.price) * item.quantity,
     0,
   );
 
@@ -58,19 +57,14 @@ export async function createCheckoutSession(userId: string) {
           product_data: {
             name: item.product.name,
             description: `Size: ${item.size}`,
-            images: item.product.image
-              ? [item.product.image]
-              : undefined,
+            images: item.product.image ? [item.product.image] : undefined,
           },
-          unit_amount: Math.round(
-            Number(item.product.price) * 100,
-          ),
+          unit_amount: Math.round(Number(item.product.price) * 100),
         },
       })),
-      success_url:
-        `${env.clientUrl}/checkout?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:
-        `${env.clientUrl}/checkout?payment=cancelled`,
+      success_url: `${env.clientUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+
+      cancel_url: `${env.clientUrl}/checkout?payment=cancelled`,
       customer_email: user?.email,
       metadata: {
         orderId: order.id,
