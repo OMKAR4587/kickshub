@@ -1,9 +1,7 @@
 import type { Request, Response } from "express";
 import Stripe from "stripe";
 
-import {
-  handleCheckoutSessionCompleted,
-} from "../services/stripe.service.js";
+import { handleCheckoutSessionCompleted,handleCheckoutSessionExpired } from "../services/stripe.service.js";
 
 import { env } from "../config/env.js";
 
@@ -31,10 +29,7 @@ export async function handleStripeWebhookController(
       env.stripeWebhookSecret,
     );
   } catch (error) {
-    console.error(
-      "Stripe webhook signature verification failed:",
-      error,
-    );
+    console.error("Stripe webhook signature verification failed:", error);
 
     return res.status(400).json({
       success: false,
@@ -45,18 +40,19 @@ export async function handleStripeWebhookController(
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-
       await handleCheckoutSessionCompleted(session);
+    }
+
+    if (event.type === "checkout.session.expired") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await handleCheckoutSessionExpired(session);
     }
 
     return res.status(200).json({
       received: true,
     });
   } catch (error) {
-    console.error(
-      "Failed to process Stripe webhook:",
-      error,
-    );
+    console.error("Failed to process Stripe webhook:", error);
 
     return res.status(500).json({
       success: false,
