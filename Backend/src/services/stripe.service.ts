@@ -18,6 +18,9 @@ export async function handleCheckoutSessionCompleted(
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.findUnique({
       where: { id: orderId },
+      include: {
+        items: true,
+      },
     });
 
     if (!order) {
@@ -28,7 +31,7 @@ export async function handleCheckoutSessionCompleted(
       throw new Error("Stripe session does not match order");
     }
 
-    // A retry for an already-paid order is safe.
+    // A repeated webhook must not process the same order twice.
     if (order.status === "PAID") {
       return order;
     }
@@ -37,9 +40,52 @@ export async function handleCheckoutSessionCompleted(
       throw new Error("Order is not pending payment");
     }
 
-    return tx.order.update({
-      where: { id: order.id },
-      data: { status: "PAID" },
+    // Claim the pending order so concurrent webhook deliveries
+    // cannot both perform cart cleanup.
+    const updated = await tx.order.updateMany({
+      where: {
+        id: order.id,
+        status: "PENDING",
+        stripeSessionId: session.id,
+      },
+      data: {
+        status: "PAID",
+      },
+    });
+
+    if (updated.count === 0) {
+      throw new Error("Order has already been processed");
+    }
+
+    const cart = await tx.cart.findUnique({
+      where: {
+        userId: order.userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (cart) {
+      for (const item of order.items) {
+        await tx.cartItem.deleteMany({
+          where: {
+            cartId: cart.id,
+            productId: item.productId,
+            size: item.size,
+            quantity: item.quantity,
+          },
+        });
+      }
+    }
+
+    return tx.order.findUnique({
+      where: {
+        id: order.id,
+      },
+      include: {
+        items: true,
+      },
     });
   });
 }

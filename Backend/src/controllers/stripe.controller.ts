@@ -1,9 +1,11 @@
 import type { Request, Response } from "express";
 import Stripe from "stripe";
 
-import { handleCheckoutSessionCompleted,handleCheckoutSessionExpired } from "../services/stripe.service.js";
-
 import { env } from "../config/env.js";
+import {
+  handleCheckoutSessionCompleted,
+  handleCheckoutSessionExpired,
+} from "../services/stripe.service.js";
 
 const stripe = new Stripe(env.stripeSecretKey);
 
@@ -33,27 +35,36 @@ export async function handleStripeWebhookController(
 
     return res.status(400).json({
       success: false,
-      message: "Invalid Stripe signature",
+      message: "Invalid Stripe webhook signature",
     });
   }
 
   try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutSessionCompleted(session);
-    }
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutSessionCompleted(session);
+        break;
+      }
 
-    if (event.type === "checkout.session.expired") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutSessionExpired(session);
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutSessionExpired(session);
+        break;
+      }
+
+      default:
+        // Other Stripe events are intentionally ignored.
+        break;
     }
 
     return res.status(200).json({
       received: true,
     });
   } catch (error) {
-    console.error("Failed to process Stripe webhook:", error);
+    console.error("Stripe webhook processing failed:", error);
 
+    // Return a failure so Stripe can retry the event.
     return res.status(500).json({
       success: false,
       message: "Webhook processing failed",

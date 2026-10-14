@@ -234,3 +234,25 @@ export async function createCheckoutSession(token: string) {
 
   return response.json();
 }
+
+export async function verifyPayment(sessionId: string, token: string) {
+  const response = await fetch(
+    "http://localhost:5000/api/payments/verify-session",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sessionId }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || "Payment verification failed");
+  }
+
+  return data.order;
+}

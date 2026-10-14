@@ -3,49 +3,35 @@ import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Package, ArrowRight } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
-import { useCart } from "../../context/CartContext";
+import { verifyPayment } from "../../services/api";
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
   const { token } = useAuth();
-  const { refreshCart } = useCart();
 
   const [status, setStatus] = useState<
     "loading" | "success" | "error"
   >("loading");
+
   const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
-    async function verifyPayment() {
+    async function confirmPayment() {
       if (!token || !sessionId) {
         setStatus("error");
         return;
       }
 
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/payments/verify-session",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || "Payment verification failed");
-        }
+        const order = await verifyPayment(sessionId, token);
 
         if (!cancelled) {
-          setOrderId(data.order.id);
+          setOrderId(order.id);
           setStatus("success");
-          await refreshCart();
         }
       } catch (error) {
         console.error("Payment verification failed:", error);
@@ -56,18 +42,22 @@ export default function OrderSuccess() {
       }
     }
 
-    verifyPayment();
+    void confirmPayment();
 
     return () => {
       cancelled = true;
     };
-  }, [token, sessionId, refreshCart]);
+  }, [token, sessionId]);
 
   if (status === "loading") {
     return (
       <main className="mx-auto max-w-xl px-4 py-24 text-center">
         <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900" />
-        <h1 className="text-2xl font-bold">Verifying your payment</h1>
+
+        <h1 className="text-2xl font-bold">
+          Verifying your payment
+        </h1>
+
         <p className="mt-2 text-neutral-500">
           Please wait while we confirm your order.
         </p>
@@ -78,17 +68,23 @@ export default function OrderSuccess() {
   if (status === "error") {
     return (
       <main className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold">We couldn't confirm your payment</h1>
+        <h1 className="text-2xl font-bold">
+          We couldn&apos;t confirm your payment
+        </h1>
+
         <p className="mt-3 text-neutral-500">
-          Your payment status could not be verified. Check your orders before trying again.
+          Your payment status could not be verified. Check your orders
+          before trying again.
         </p>
-        <div className="mt-7 flex justify-center gap-3">
+
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
             to="/account"
             className="rounded-full bg-neutral-950 px-6 py-3 text-white"
           >
             View orders
           </Link>
+
           <Link
             to="/products"
             className="rounded-full border px-6 py-3"
@@ -113,7 +109,8 @@ export default function OrderSuccess() {
       </h1>
 
       <p className="mt-4 text-neutral-600">
-        Thanks for shopping with KicksHub. Your payment is confirmed and your order has been saved.
+        Thanks for shopping with KicksHub. Your payment is confirmed
+        and your order has been saved.
       </p>
 
       {orderId && (
