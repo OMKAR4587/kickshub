@@ -1,62 +1,58 @@
-# KicksHub 👟
+# 👟 KICKSHUB®
 
-A full-stack sneaker e-commerce application built with React, TypeScript, Node.js, Express, and PostgreSQL.
+### SNEAKER CULTURE. BUILT FOR THE NEXT MOVE.
 
-KicksHub is designed to provide a modern shopping experience with product discovery, cart management, user authentication, and secure checkout.
+**Not just shoes. It's a movement.**
 
-## ✨ Features
+KicksHub is a modern sneaker e-commerce platform built for sneaker lovers. Discover your next pair, save your favorites, and experience a seamless shopping journey.
 
-- 🛍️ Browse and explore sneakers
-- 🔐 User authentication
-- 🛒 Shopping cart management
-- ❤️ Wishlist functionality
-- 📦 Order creation and tracking
-- 💳 Stripe Checkout integration
-- 📱 Responsive user interface
-- 🗄️ PostgreSQL database with Prisma ORM
+<p align="center">
+  <strong>DISCOVER YOUR STYLE · FIND YOUR PAIR · MAKE YOUR MOVE</strong>
+</p>
 
-## 🧰 Tech Stack
+---
 
-### Frontend
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Router
-- GSAP
-- Lucide React
+## ⚡ The Experience
 
-### Backend
-- Node.js
-- Express
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT authentication
-- bcryptjs
-- Stripe
+| Feature | Description |
+|---|---|
+| 🛍️ **Discover** | Browse sneakers and explore collections. |
+| 🔐 **Authentication** | Secure user registration and login. |
+| 🛒 **Your Cart** | Add sneakers, choose sizes, and manage items. |
+| ❤️ **Wishlist** | Save your favorite pairs. |
+| 📦 **Orders** | Create and manage sneaker orders. |
+| 💳 **Checkout** | Stripe-powered payment integration. |
+| 📱 **Responsive UI** | A modern shopping experience across screen sizes. |
 
-## 📁 Project Structure
+## 🧰 Built With
 
-```text
-KicksHub/
-├── Frontend/       # React frontend
-├── Backend/        # Express API
-├── README.md
-└── .gitignore
-```
+**Frontend**
 
-## ⚙️ Prerequisites
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-Install the following before running the project:
+**Backend & Database**
 
-- Node.js (LTS recommended)
-- npm
-- PostgreSQL
-- Git
-- Stripe CLI (for local webhook testing)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe&logoColor=white)
 
-## 🚀 Getting Started
+## 📸 The Look
+
+<!-- Add a screenshot of your actual homepage here. -->
+<!-- Save it as assets/kickshub-homepage.png and uncomment below. -->
+
+<!--
+<p align="center">
+  <img src="assets/kickshub-homepage.png" alt="KicksHub homepage" width="900">
+</p>
+-->
+
+## 🚀 Get Started
 
 ### 1. Clone the repository
 
@@ -65,26 +61,15 @@ git clone YOUR_GITHUB_REPOSITORY_URL
 cd KicksHub
 ```
 
-Replace `YOUR_GITHUB_REPOSITORY_URL` with your actual repository URL.
-
-### 2. Set up the frontend
+### 2. Start the frontend
 
 ```bash
 cd Frontend
 npm install
-```
-
-Create a local `.env` file using the environment variables required by your frontend. See `.env.example` for the expected names.
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Frontend: `http://localhost:5173`
-
-### 3. Set up the backend
+### 3. Configure the backend
 
 Open another terminal:
 
@@ -93,57 +78,44 @@ cd Backend
 npm install
 ```
 
-Create a local `.env` file containing your required database, authentication, Stripe, and frontend URL configuration.
+Create your local `.env` file using the configuration required by the backend. Set up PostgreSQL and configure the database connection before running the appropriate Prisma commands.
 
-Configure the database connection and generate the Prisma client using the commands supported by this project's Prisma setup.
+Start the backend using the development script in `Backend/package.json`.
 
-Start the backend using the development script defined in `Backend/package.json`.
+> **Note:** Exact environment variable names and database commands depend on the project's current configuration.
 
-Backend: `http://localhost:5000`
+## 🔐 Environment Setup
 
-## 🔑 Environment Variables
+Keep your credentials private.
 
-The backend may require configuration for:
+- Never commit `.env` files.
+- Never expose Stripe secret keys, JWT secrets, or database passwords.
+- Use `.env.example` files to document the required variable names without including secret values.
 
-- PostgreSQL database connection
-- JWT authentication secret
-- Stripe secret key
-- Stripe webhook signing secret
-- Frontend/client URL
+## 💳 Payments
 
-The frontend may require the backend API base URL.
+KicksHub integrates Stripe Checkout for payment processing. Use Stripe test mode and the configured webhook listener for local development.
 
-Use `.env.example` files to document variable names without exposing real credentials. Never commit `.env` files or production secrets.
+## 🗺️ Roadmap
 
-## 💳 Stripe Testing
+- [x] React + TypeScript frontend
+- [x] Express backend
+- [x] PostgreSQL and Prisma integration
+- [x] Cart and wishlist functionality
+- [x] Stripe Checkout integration
+- [ ] Complete end-to-end payment verification
+- [ ] Polish the order confirmation experience
+- [ ] Production deployment
 
-KicksHub uses Stripe Checkout for test payments.
+## 👟 The Philosophy
 
-For local webhook testing, start the Stripe CLI listener with the events configured by the backend:
+> **Find your pair. Define your style. Move different.**
 
-```bash
-stripe listen --events checkout.session.completed,checkout.session.expired --forward-to localhost:5000/api/stripe/webhook
-```
+KicksHub is an ongoing project exploring modern e-commerce, full-stack development, and sneaker culture.
 
-Use Stripe test-mode credentials when testing locally. Do not use real payment credentials in development.
+---
 
-## 🗄️ Database
-
-KicksHub uses PostgreSQL with Prisma ORM.
-
-After configuring the database, run the appropriate Prisma migration and client-generation commands for the installed Prisma version. See the backend configuration and Prisma documentation for the exact workflow.
-
-## 🔒 Security
-
-- Keep environment variables and credentials private.
-- Never commit API secret keys or database passwords.
-- Validate and authenticate protected API requests.
-- Verify Stripe webhook signatures before processing payment events.
-
-## 🛠️ Development Status
-
-KicksHub is under active development. Features, setup instructions, and project structure may evolve as development continues.
-
-## 📄 License
-
-No license has been specified yet.
+<p align="center">
+  <strong>KICKSHUB®</strong><br>
+  <sub>MADE FOR THE LOVE OF SNEAKERS.</sub>
+</p>
