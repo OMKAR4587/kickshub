@@ -57,7 +57,7 @@ KicksHub is a modern sneaker e-commerce platform built for sneaker lovers. Disco
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone [YOUR_GITHUB_REPOSITORY_URL](https://github.com/OMKAR4587/kickshub)
 cd KicksHub
 ```
 
