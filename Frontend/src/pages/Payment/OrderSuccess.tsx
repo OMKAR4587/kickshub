@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Package, ArrowRight } from "lucide-react";
-
+import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { verifyPayment } from "../../services/api";
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
-
+  const { clearCart } = useAuth()
   const { token } = useAuth();
 
   const [status, setStatus] = useState<
@@ -28,7 +28,8 @@ export default function OrderSuccess() {
 
       try {
         const order = await verifyPayment(sessionId, token);
-
+        await clearCart();
+        
         if (!cancelled) {
           setOrderId(order.id);
           setStatus("success");
