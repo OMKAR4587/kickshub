@@ -4,6 +4,7 @@ import { CheckCircle2, Package, ArrowRight } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { verifyPayment } from "../../services/api";
+import CheckoutProgress from "../../components/ui/CheckoutProgress";
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
@@ -52,7 +53,9 @@ export default function OrderSuccess() {
 
   if (status === "loading") {
     return (
+      
       <main className="mx-auto max-w-xl px-4 py-24 text-center">
+        <CheckoutProgress currentStep={2} />
         <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900" />
 
         <h1 className="text-2xl font-bold">
@@ -69,6 +72,7 @@ export default function OrderSuccess() {
   if (status === "error") {
     return (
       <main className="mx-auto max-w-xl px-4 py-24 text-center">
+        <CheckoutProgress currentStep={2} />
         <h1 className="text-2xl font-bold">
           We couldn&apos;t confirm your payment
         </h1>
@@ -99,6 +103,7 @@ export default function OrderSuccess() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-24 text-center">
+      <CheckoutProgress currentStep={3} />
       <CheckCircle2 className="mx-auto h-16 w-16 text-green-600" />
 
       <p className="mt-6 text-sm font-semibold uppercase tracking-widest text-green-700">

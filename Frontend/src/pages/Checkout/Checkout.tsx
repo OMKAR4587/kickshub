@@ -1,11 +1,8 @@
-import { useState } from "react";
-
+import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   Lock,
   ShieldCheck,
   Truck,
@@ -13,34 +10,38 @@ import {
   MapPin,
   Mail,
   User,
+  ShoppingBag,
 } from "lucide-react";
 
 import Container from "../../components/ui/Container";
-
+import CheckoutProgress from "../../components/ui/CheckoutProgress";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-
 import { createCheckoutSession } from "../../services/api";
+
+const inputClass =
+  "w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/5";
+
+const labelClass =
+  "mb-2 block text-sm font-medium text-neutral-700";
 
 function Checkout() {
   const { items, cartTotal } = useCart();
   const { token } = useAuth();
   const { showToast } = useToast();
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
+    if (isSubmitting) return;
+
     if (!token) {
-      showToast(
-        "Please log in before placing your order",
-        "error",
-      );
+      showToast("Please log in before placing your order", "error");
       return;
     }
 
@@ -62,12 +63,9 @@ function Checkout() {
         return;
       }
 
-      window.location.href = data.url;
+      window.location.assign(data.url);
     } catch (error) {
-      console.error(
-        "Failed to start checkout:",
-        error,
-      );
+      console.error("Failed to start checkout:", error);
 
       showToast(
         "Unable to start payment. Please try again.",
@@ -80,533 +78,432 @@ function Checkout() {
 
   if (items.length === 0) {
     return (
-      <section className="min-h-[70vh] bg-neutral-50 py-20 sm:py-28">
+      <main className="min-h-screen bg-white py-16 sm:py-24">
         <Container>
-          <div className="mx-auto max-w-lg text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-black text-white">
-              <CreditCard size={26} />
+          <div className="mx-auto max-w-md py-12 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
+              <ShoppingBag
+                size={27}
+                strokeWidth={1.5}
+                className="text-neutral-700"
+              />
             </div>
 
-            <p className="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-purple-600">
-              Checkout
-            </p>
-
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-neutral-950 sm:text-5xl">
+            <h1 className="mt-6 text-2xl font-semibold tracking-tight text-neutral-950">
               Your cart is empty
             </h1>
 
-            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-neutral-500">
-              Add something fresh to your rotation before
-              heading to checkout.
+            <p className="mt-3 text-sm leading-6 text-neutral-500">
+              Looks like you haven't added any sneakers yet.
+              Find your next favourite pair.
             </p>
 
             <Link
               to="/products"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-black px-7 py-4 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-neutral-800"
+              className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
             >
-              Shop sneakers
+              Explore sneakers
               <ArrowRight size={17} />
             </Link>
           </div>
         </Container>
-      </section>
-    );
-  }
-
-  if (isSubmitted) {
-    return (
-      <section className="min-h-[70vh] bg-neutral-50 py-20 sm:py-28">
-        <Container>
-          <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-white shadow-xl shadow-green-500/20">
-              <Check size={38} strokeWidth={3} />
-            </div>
-
-            <p className="mt-8 text-xs font-bold uppercase tracking-[0.25em] text-green-600">
-              Order confirmed
-            </p>
-
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-neutral-950 sm:text-5xl">
-              You&apos;re all set.
-            </h1>
-
-            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-neutral-500">
-              Your payment was successful and your order
-              is now being processed.
-            </p>
-
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                to="/account"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-7 py-4 text-sm font-bold text-white transition hover:bg-neutral-800"
-              >
-                View account
-                <ArrowRight size={17} />
-              </Link>
-
-              <Link
-                to="/products"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-300 bg-white px-7 py-4 text-sm font-bold text-neutral-900 transition hover:border-neutral-500"
-              >
-                Continue shopping
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </section>
+      </main>
     );
   }
 
   return (
-    <section className="min-h-screen bg-neutral-50 py-10 sm:py-10 lg:py-10">
+    <main className="min-h-screen bg-[#fafafa] pb-16 pt-6 sm:pt-10">
       <Container>
         {/* Top navigation */}
         <div className="mb-8 flex items-center justify-between">
           <Link
             to="/cart"
-            className="group inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition hover:text-neutral-950"
+            className="inline-flex items-center gap-2 text-sm text-neutral-500 transition hover:text-neutral-950"
           >
-            <ArrowLeft
-              size={17}
-              className="transition-transform group-hover:-translate-x-1"
-            />
-            Back to cart
+            <ArrowLeft size={16} />
+            <span>Back to bag</span>
           </Link>
 
-          <div className="hidden items-center gap-2 text-xs font-semibold text-neutral-400 sm:flex">
-            <Lock size={14} />
+          <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+            <Lock size={13} />
             Secure checkout
           </div>
         </div>
 
-        {/* Header */}
-        <div className="mb-10 max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-purple-600">
-            KicksHub checkout
+        {/* Heading */}
+        <header className="mb-8 border-b border-neutral-200 pb-7 sm:mb-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">
+            KICKSHUB / CHECKOUT
           </p>
 
-          <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-neutral-950 sm:text-5xl lg:text-6xl">
-            Finish your
-            <span className="bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}
-              move.
-            </span>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">
+            Checkout
           </h1>
 
-          <p className="mt-4 max-w-xl text-sm leading-6 text-neutral-500 sm:text-base">
-            Enter your delivery details and secure your
-            latest pair. No distractions. Just checkout.
+          <p className="mt-2 text-sm leading-6 text-neutral-500">
+            A few details, then your new pair is almost yours.
           </p>
-        </div>
+        </header>
 
         {/* Progress */}
-        <div className="mb-8 hidden items-center gap-3 sm:flex">
-          <div className="flex items-center gap-2 text-sm font-bold text-neutral-950">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs text-white">
-              1
-            </span>
-            Details
-          </div>
-
-          <div className="h-px w-16 bg-neutral-200" />
-
-          <div className="flex items-center gap-2 text-sm font-bold text-neutral-950">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
-              2
-            </span>
-            Payment
-          </div>
-
-          <div className="h-px w-16 bg-neutral-200" />
-
-          <div className="flex items-center gap-2 text-sm font-medium text-neutral-400">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white text-xs">
-              3
-            </span>
-            Confirmation
-          </div>
+        <div className="mb-10">
+          <CheckoutProgress currentStep={1} />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
-          {/* LEFT */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-            {/* Contact */}
-            <div className="rounded-3xl border border-neutral-200 bg-white p-6 sm:p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-950 text-white">
-                  <Mail size={19} />
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-neutral-950">
-                    Contact information
-                  </h2>
-
-                  <p className="mt-1 text-sm text-neutral-500">
-                    Where should we send your order updates?
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-7">
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-semibold text-neutral-700"
-                >
-                  Email address
-                </label>
-
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                />
-              </div>
-            </div>
-
-            {/* Shipping */}
-            <div className="rounded-3xl border border-neutral-200 bg-white p-6 sm:p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-600 text-white">
-                  <MapPin size={19} />
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-neutral-950">
-                    Shipping address
-                  </h2>
-
-                  <p className="mt-1 text-sm text-neutral-500">
-                    Where should we deliver your sneakers?
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-7 grid gap-5 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="name"
-                    className="mb-2 block text-sm font-semibold text-neutral-700"
-                  >
-                    Full name
-                  </label>
-
-                  <div className="relative">
-                    <User
-                      size={17}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
-                    />
-
-                    <input
-                      id="name"
-                      type="text"
-                      required
-                      placeholder="John Doe"
-                      className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 pl-11 pr-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                    />
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
+          {/* Form */}
+          <div className="min-w-0">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Contact */}
+              <section className="border-b border-neutral-200 pb-8">
+                <div className="mb-6 flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
+                    <User size={17} strokeWidth={1.7} />
                   </div>
-                </div>
 
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="address"
-                    className="mb-2 block text-sm font-semibold text-neutral-700"
-                  >
-                    Address
-                  </label>
-
-                  <input
-                    id="address"
-                    type="text"
-                    required
-                    placeholder="123 Main Street"
-                    className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="city"
-                    className="mb-2 block text-sm font-semibold text-neutral-700"
-                  >
-                    City
-                  </label>
-
-                  <input
-                    id="city"
-                    type="text"
-                    required
-                    placeholder="Mumbai"
-                    className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="postal"
-                    className="mb-2 block text-sm font-semibold text-neutral-700"
-                  >
-                    Postal code
-                  </label>
-
-                  <input
-                    id="postal"
-                    type="text"
-                    required
-                    placeholder="400001"
-                    className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="country"
-                    className="mb-2 block text-sm font-semibold text-neutral-700"
-                  >
-                    Country
-                  </label>
-
-                  <select
-                    id="country"
-                    required
-                    defaultValue="India"
-                    className="h-13 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition focus:border-neutral-950 focus:bg-white focus:ring-4 focus:ring-neutral-950/5"
-                  >
-                    <option>India</option>
-                    <option>United States</option>
-                    <option>United Kingdom</option>
-                    <option>Canada</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment */}
-            <div className="rounded-3xl border border-neutral-200 bg-white p-6 sm:p-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
-                  <CreditCard size={19} />
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-neutral-950">
-                    Payment
-                  </h2>
-
-                  <p className="mt-1 text-sm text-neutral-500">
-                    Secure payment processing.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-7 flex items-start gap-4 rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 p-5">
-                <ShieldCheck
-                  size={22}
-                  className="mt-0.5 shrink-0 text-green-600"
-                />
-
-                <div>
-                  <p className="text-sm font-bold text-neutral-950">
-                    Secure checkout
-                  </p>
-
-                  <p className="mt-1 text-sm leading-6 text-neutral-500">
-                    Secure payment powered by Stripe.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-neutral-950 px-6 text-sm font-bold text-white shadow-xl shadow-neutral-950/10 transition-all hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Redirecting to payment...
-                </>
-              ) : (
-                <>
-                  Place order
-                  <span className="h-5 w-px bg-white/20" />
-                  ₹{cartTotal.toFixed(2)}
-                  <ArrowRight
-                    size={18}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </>
-              )}
-            </button>
-
-            <p className="flex items-center justify-center gap-2 text-center text-xs text-neutral-400">
-              <Lock size={13} />
-              Your information is protected with secure
-              checkout.
-            </p>
-          </form>
-
-          {/* RIGHT — ORDER SUMMARY */}
-          <aside className="h-fit lg:sticky lg:top-24">
-            <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
-              {/* Summary header */}
-              <div className="border-b border-neutral-100 p-6">
-                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-600">
-                      Your order
-                    </p>
-
-                    <h2 className="mt-1 text-xl font-black text-neutral-950">
-                      Order summary
+                    <h2 className="text-base font-semibold text-neutral-950">
+                      Contact details
                     </h2>
+                    <p className="mt-1 text-sm text-neutral-500">
+                      Where can we reach you?
+                    </p>
                   </div>
-
-                  <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600">
-                    {items.length}{" "}
-                    {items.length === 1 ? "item" : "items"}
-                  </span>
                 </div>
-              </div>
 
-              {/* Products */}
-              <div className="max-h-107.5 space-y-5 overflow-auto p-6">
-                {items.map((item) => (
-                  <div
-                    key={`${item.product.id}-${item.size}`}
-                    className="flex gap-4"
-                  >
-                    <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-neutral-50">
-                      <img
-                        src={item.product.image}
-                        alt={item.product.name}
-                        className="h-full w-full object-contain"
+                <div className="space-y-5">
+                  <div>
+                    <label htmlFor="email" className={labelClass}>
+                      Email address
+                    </label>
+
+                    <div className="relative">
+                      <Mail
+                        size={17}
+                        strokeWidth={1.7}
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                       />
 
-                      <span className="absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-black px-1.5 text-[10px] font-bold text-white">
-                        {item.quantity}
-                      </span>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        required
+                        className={`${inputClass} pl-10`}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="fullName" className={labelClass}>
+                      Full name
+                    </label>
+
+                    <input
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Enter your full name"
+                      required
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* Shipping */}
+              <section className="border-b border-neutral-200 pb-8">
+                <div className="mb-6 flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
+                    <MapPin size={17} strokeWidth={1.7} />
+                  </div>
+
+                  <div>
+                    <h2 className="text-base font-semibold text-neutral-950">
+                      Delivery address
+                    </h2>
+                    <p className="mt-1 text-sm text-neutral-500">
+                      Where should your sneakers arrive?
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <div>
+                    <label htmlFor="address" className={labelClass}>
+                      Street address
+                    </label>
+
+                    <input
+                      id="address"
+                      name="address"
+                      type="text"
+                      autoComplete="street-address"
+                      placeholder="House number, street and area"
+                      required
+                      className={inputClass}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="city" className={labelClass}>
+                        City
+                      </label>
+
+                      <input
+                        id="city"
+                        name="city"
+                        type="text"
+                        autoComplete="address-level2"
+                        placeholder="Your city"
+                        required
+                        className={inputClass}
+                      />
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-bold leading-5 text-neutral-950">
-                        {item.product.name}
+                    <div>
+                      <label
+                        htmlFor="postalCode"
+                        className={labelClass}
+                      >
+                        PIN code
+                      </label>
+
+                      <input
+                        id="postalCode"
+                        name="postalCode"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="postal-code"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        placeholder="6-digit PIN code"
+                        title="Enter a valid 6-digit PIN code"
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="country" className={labelClass}>
+                      Country
+                    </label>
+
+                    <select
+                      id="country"
+                      name="country"
+                      autoComplete="country-name"
+                      defaultValue="India"
+                      required
+                      className={inputClass}
+                    >
+                      <option value="India">India</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              {/* Payment */}
+              <section>
+                <div className="mb-5 flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
+                    <CreditCard size={17} strokeWidth={1.7} />
+                  </div>
+
+                  <div>
+                    <h2 className="text-base font-semibold text-neutral-950">
+                      Payment
+                    </h2>
+                    <p className="mt-1 text-sm text-neutral-500">
+                      Secure payment with Stripe
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-lg border border-neutral-200 bg-white p-4">
+                  <ShieldCheck
+                    size={19}
+                    strokeWidth={1.7}
+                    className="mt-0.5 shrink-0 text-neutral-700"
+                  />
+
+                  <div>
+                    <p className="text-sm font-medium text-neutral-900">
+                      Your payment is protected
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-neutral-500">
+                      You'll continue to Stripe's secure checkout
+                      to complete your payment.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Submit */}
+              <div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-neutral-950 px-6 py-3.5 text-sm font-semibold text-white transition duration-200 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                      />
+                      Connecting to payment...
+                    </>
+                  ) : (
+                    <>
+                      Continue to payment
+                      <ArrowRight size={17} />
+                    </>
+                  )}
+                </button>
+
+                <p className="mt-3 text-center text-xs leading-5 text-neutral-500">
+                  <Lock
+                    size={12}
+                    className="mr-1 inline-block align-[-2px]"
+                  />
+                  Secure checkout · Your card details stay protected
+                </p>
+              </div>
+            </form>
+          </div>
+
+          {/* Order summary */}
+          <aside className="min-w-0 lg:sticky lg:top-6">
+            <div className="rounded-xl border border-neutral-200 bg-white p-5 sm:p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-neutral-950">
+                  Order summary
+                </h2>
+
+                <span className="text-xs text-neutral-500">
+                  {items.length} {items.length === 1 ? "item" : "items"}
+                </span>
+              </div>
+
+              <div className="mt-6 space-y-5">
+                {items.map((item) => (
+                  <div
+                    key={`${item.productId}-${item.size}`}
+                    className="flex items-start gap-3"
+                  >
+                    <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-lg bg-neutral-100">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <ShoppingBag
+                            size={22}
+                            className="text-neutral-400"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1 pt-0.5">
+                      <p className="line-clamp-2 text-sm font-medium leading-5 text-neutral-900">
+                        {item.name}
                       </p>
 
-                      <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
-                        <span>Size {item.size}</span>
+                      <p className="mt-1.5 text-xs text-neutral-500">
+                        Size {item.size} · Qty {item.quantity}
+                      </p>
 
-                        <span className="h-1 w-1 rounded-full bg-neutral-300" />
-
-                        <span>Qty {item.quantity}</span>
-                      </div>
-
-                      <p className="mt-3 text-sm font-bold text-neutral-950">
+                      <p className="mt-2 text-sm font-semibold text-neutral-950">
                         ₹
                         {(
-                          Number(item.product.price) *
-                          item.quantity
-                        ).toLocaleString("en-IN", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                          Number(item.price) * item.quantity
+                        ).toLocaleString("en-IN")}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Totals */}
-              <div className="border-t border-neutral-100 bg-neutral-50 p-6">
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between text-neutral-500">
-                    <span>Subtotal</span>
+              <div className="my-6 border-t border-dashed border-neutral-200" />
 
-                    <span className="font-medium text-neutral-900">
-                      ₹
-                      {cartTotal.toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="font-medium text-neutral-900">
+                    ₹{Number(cartTotal).toLocaleString("en-IN")}
+                  </span>
+                </div>
 
-                  <div className="flex justify-between text-neutral-500">
-                    <span>Shipping</span>
-
-                    <span className="font-bold text-green-600">
-                      Free
-                    </span>
-                  </div>
-
-                  <div className="border-t border-neutral-200 pt-4">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-                          Total
-                        </p>
-
-                        <p className="mt-1 text-2xl font-black tracking-tight text-neutral-950">
-                          ₹
-                          {cartTotal.toLocaleString("en-IN", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
-                      </div>
-
-                      <span className="text-xs font-medium text-neutral-400">
-                        INR
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-neutral-500">Shipping</span>
+                  <span className="font-medium text-neutral-900">
+                    Free
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Benefits */}
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+              <div className="my-5 border-t border-neutral-200" />
+
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-neutral-950">
+                    Total
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    INR · Inclusive of applicable charges
+                  </p>
+                </div>
+
+                <p className="text-2xl font-semibold tracking-tight text-neutral-950">
+                  ₹{Number(cartTotal).toLocaleString("en-IN")}
+                </p>
+              </div>
+
+              <div className="mt-6 flex items-start gap-3 rounded-lg bg-neutral-50 p-3.5">
                 <Truck
                   size={18}
-                  className="text-purple-600"
+                  strokeWidth={1.7}
+                  className="mt-0.5 shrink-0 text-neutral-600"
                 />
 
-                <p className="mt-3 text-xs font-bold text-neutral-950">
-                  Free shipping
-                </p>
-
-                <p className="mt-1 text-[11px] leading-4 text-neutral-400">
-                  On every order
-                </p>
+                <div>
+                  <p className="text-xs font-semibold text-neutral-800">
+                    Delivery to your doorstep
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-neutral-500">
+                    Delivery details will be confirmed with your order.
+                  </p>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4">
-                <ShieldCheck
-                  size={18}
-                  className="text-green-600"
-                />
+              <Link
+                to="/cart"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-neutral-500 transition hover:text-neutral-950"
+              >
+                <ArrowLeft size={15} />
+                Edit bag
+              </Link>
+            </div>
 
-                <p className="mt-3 text-xs font-bold text-neutral-950">
-                  Secure checkout
-                </p>
-
-                <p className="mt-1 text-[11px] leading-4 text-neutral-400">
-                  Protected payment
-                </p>
-              </div>
+            <div className="mt-4 flex items-center justify-center gap-2 py-2 text-xs text-neutral-500">
+              <ShieldCheck size={15} />
+              Secure payments powered by Stripe
             </div>
           </aside>
         </div>
       </Container>
-    </section>
+    </main>
   );
 }
 
