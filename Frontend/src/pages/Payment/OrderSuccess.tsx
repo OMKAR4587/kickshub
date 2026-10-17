@@ -8,7 +8,7 @@ import { verifyPayment } from "../../services/api";
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const { clearCart } = useAuth()
+  const { clearCart } = useCart()
   const { token } = useAuth();
 
   const [status, setStatus] = useState<
@@ -29,7 +29,7 @@ export default function OrderSuccess() {
       try {
         const order = await verifyPayment(sessionId, token);
         await clearCart();
-        
+
         if (!cancelled) {
           setOrderId(order.id);
           setStatus("success");
