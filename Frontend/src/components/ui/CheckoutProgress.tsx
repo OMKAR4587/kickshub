@@ -17,7 +17,7 @@ export default function CheckoutProgress({
   return (
     <nav
       aria-label="Checkout progress"
-      className="mb-8 w-full"
+      className="m-6 w-2/3 mx-auto"
     >
       <ol className="flex w-full items-start">
         {steps.map((step, index) => {
@@ -32,7 +32,7 @@ export default function CheckoutProgress({
                 index < steps.length - 1 ? "flex-1" : ""
               }`}
             >
-              <div className="flex min-w-[60px] flex-col items-center gap-2">
+              <div className="flex min-w-15 flex-col items-center gap-2">
                 <span
                   aria-label={`${step.label} ${
                     completed

@@ -54,7 +54,7 @@ export default function OrderSuccess() {
   if (status === "loading") {
     return (
       
-      <main className="mx-auto max-w-xl px-4 py-24 text-center">
+      <main className="mx-auto max-w-xl px-4 py-2 text-center">
         <CheckoutProgress currentStep={2} />
         <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900" />
 
@@ -71,7 +71,7 @@ export default function OrderSuccess() {
 
   if (status === "error") {
     return (
-      <main className="mx-auto max-w-xl px-4 py-24 text-center">
+      <main className="mx-auto max-w-xl px-4 py-2 text-center">
         <CheckoutProgress currentStep={2} />
         <h1 className="text-2xl font-bold">
           We couldn&apos;t confirm your payment
@@ -102,8 +102,9 @@ export default function OrderSuccess() {
   }
 
   return (
-    <main className="mx-auto max-w-xl px-4 py-24 text-center">
-      <CheckoutProgress currentStep={3} />
+    <>
+    <CheckoutProgress currentStep={3} />
+    <main className="mx-auto max-w-xl px-4 py-8 mb-6 text-center rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
       <CheckCircle2 className="mx-auto h-16 w-16 text-green-600" />
 
       <p className="mt-6 text-sm font-semibold uppercase tracking-widest text-green-700">
@@ -143,5 +144,6 @@ export default function OrderSuccess() {
         </Link>
       </div>
     </main>
+    </>
   );
 }

@@ -10,7 +10,6 @@ import {
   MapPin,
   Mail,
   User,
-  ShoppingBag,
 } from "lucide-react";
 
 import Container from "../../components/ui/Container";
@@ -20,12 +19,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { createCheckoutSession } from "../../services/api";
 
-const inputClass =
-  "w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/5";
-
-const labelClass =
-  "mb-2 block text-sm font-medium text-neutral-700";
-
 function Checkout() {
   const { items, cartTotal } = useCart();
   const { token } = useAuth();
@@ -33,11 +26,10 @@ function Checkout() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Prevent duplicate submissions
     if (isSubmitting) return;
 
     if (!token) {
@@ -56,135 +48,118 @@ function Checkout() {
       const data = await createCheckoutSession(token);
 
       if (!data.success || !data.url) {
-        showToast(
-          data.message || "Unable to start payment",
-          "error",
-        );
+        showToast(data.message || "Unable to start payment", "error");
         return;
       }
 
+      // Redirect to Stripe hosted checkout
       window.location.assign(data.url);
     } catch (error) {
       console.error("Failed to start checkout:", error);
 
-      showToast(
-        "Unable to start payment. Please try again.",
-        "error",
-      );
+      showToast("Unable to start payment. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Empty cart
   if (items.length === 0) {
     return (
-      <main className="min-h-screen bg-white py-16 sm:py-24">
+      <div className="min-h-screen bg-neutral-50 py-16">
         <Container>
-          <div className="mx-auto max-w-md py-12 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
-              <ShoppingBag
-                size={27}
-                strokeWidth={1.5}
-                className="text-neutral-700"
-              />
+          <div className="mx-auto max-w-lg rounded-2xl border border-neutral-200 bg-white p-8 text-center shadow-sm">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
+              <CreditCard size={30} className="text-neutral-500" />
             </div>
 
-            <h1 className="mt-6 text-2xl font-semibold tracking-tight text-neutral-950">
+            <h1 className="text-2xl font-bold text-neutral-900">
               Your cart is empty
             </h1>
 
-            <p className="mt-3 text-sm leading-6 text-neutral-500">
-              Looks like you haven't added any sneakers yet.
-              Find your next favourite pair.
+            <p className="mt-3 text-neutral-600">
+              Add some sneakers to your cart before checking out.
             </p>
 
             <Link
               to="/products"
-              className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-neutral-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 font-semibold text-white transition hover:bg-neutral-700"
             >
-              Explore sneakers
-              <ArrowRight size={17} />
+              Explore Sneakers
+              <ArrowRight size={18} />
             </Link>
           </div>
         </Container>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#fafafa] pb-16 pt-6 sm:pt-10">
+    <div className="min-h-screen bg-neutral-50 py-4 sm:py-4">
       <Container>
-        {/* Top navigation */}
-        <div className="mb-8 flex items-center justify-between">
-          <Link
-            to="/cart"
-            className="inline-flex items-center gap-2 text-sm text-neutral-500 transition hover:text-neutral-950"
-          >
-            <ArrowLeft size={16} />
-            <span>Back to bag</span>
-          </Link>
+        {/* Back link */}
+        <Link
+          to="/cart"
+          className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-neutral-600 transition hover:text-neutral-950"
+        >
+          <ArrowLeft size={17} />
+          Back to Cart
+        </Link>
 
-          <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-            <Lock size={13} />
-            Secure checkout
-          </div>
-        </div>
-
-        {/* Heading */}
-        <header className="mb-8 border-b border-neutral-200 pb-7 sm:mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">
-            KICKSHUB / CHECKOUT
+        {/* Page heading */}
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500">
+            KicksHub Checkout
           </p>
 
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">
-            Checkout
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-neutral-950 sm:text-4xl">
+            Complete your order
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-neutral-500">
-            A few details, then your new pair is almost yours.
+          <p className="mt-3 max-w-xl text-neutral-600">
+            Review your details and continue to our secure payment page.
           </p>
-        </header>
-
-        {/* Progress */}
-        <div className="mb-10">
-          <CheckoutProgress currentStep={1} />
         </div>
 
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
-          {/* Form */}
-          <div className="min-w-0">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Contact */}
-              <section className="border-b border-neutral-200 pb-8">
-                <div className="mb-6 flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
-                    <User size={17} strokeWidth={1.7} />
+        {/* Checkout progress */}
+        <CheckoutProgress currentStep={1} />
+
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Checkout form */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Contact details */}
+              <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100">
+                    <User size={21} className="text-neutral-800" />
                   </div>
 
                   <div>
-                    <h2 className="text-base font-semibold text-neutral-950">
-                      Contact details
+                    <h2 className="text-lg font-bold text-neutral-900">
+                      Contact information
                     </h2>
-                    <p className="mt-1 text-sm text-neutral-500">
-                      Where can we reach you?
+                    <p className="text-sm text-neutral-500">
+                      Your contact details
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <label htmlFor="email" className={labelClass}>
+                    <label
+                      htmlFor="email"
+                      className="mb-2 block text-sm font-semibold text-neutral-700"
+                    >
                       Email address
                     </label>
 
                     <div className="relative">
                       <Mail
-                        size={17}
-                        strokeWidth={1.7}
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
                         aria-hidden="true"
-                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
                       />
-
                       <input
                         id="email"
                         name="email"
@@ -192,49 +167,62 @@ function Checkout() {
                         autoComplete="email"
                         placeholder="you@example.com"
                         required
-                        className={`${inputClass} pl-10`}
+                        className="w-full rounded-xl border border-neutral-300 bg-white py-3 pl-11 pr-4 text-base text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="fullName" className={labelClass}>
+                    <label
+                      htmlFor="fullName"
+                      className="mb-2 block text-sm font-semibold text-neutral-700"
+                    >
                       Full name
                     </label>
 
-                    <input
-                      id="fullName"
-                      name="fullName"
-                      type="text"
-                      autoComplete="name"
-                      placeholder="Enter your full name"
-                      required
-                      className={inputClass}
-                    />
+                    <div className="relative">
+                      <User
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
+                        aria-hidden="true"
+                      />
+                      <input
+                        id="fullName"
+                        name="fullName"
+                        type="text"
+                        autoComplete="name"
+                        placeholder="Enter your full name"
+                        required
+                        className="w-full rounded-xl border border-neutral-300 bg-white py-3 pl-11 pr-4 text-base text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+                      />
+                    </div>
                   </div>
                 </div>
               </section>
 
-              {/* Shipping */}
-              <section className="border-b border-neutral-200 pb-8">
-                <div className="mb-6 flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
-                    <MapPin size={17} strokeWidth={1.7} />
+              {/* Shipping details */}
+              <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100">
+                    <MapPin size={21} className="text-neutral-800" />
                   </div>
 
                   <div>
-                    <h2 className="text-base font-semibold text-neutral-950">
-                      Delivery address
+                    <h2 className="text-lg font-bold text-neutral-900">
+                      Shipping address
                     </h2>
-                    <p className="mt-1 text-sm text-neutral-500">
-                      Where should your sneakers arrive?
+                    <p className="text-sm text-neutral-500">
+                      Where should we deliver your order?
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <label htmlFor="address" className={labelClass}>
+                    <label
+                      htmlFor="address"
+                      className="mb-2 block text-sm font-semibold text-neutral-700"
+                    >
                       Street address
                     </label>
 
@@ -243,15 +231,18 @@ function Checkout() {
                       name="address"
                       type="text"
                       autoComplete="street-address"
-                      placeholder="House number, street and area"
+                      placeholder="House number, street, area"
                       required
-                      className={inputClass}
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="city" className={labelClass}>
+                      <label
+                        htmlFor="city"
+                        className="mb-2 block text-sm font-semibold text-neutral-700"
+                      >
                         City
                       </label>
 
@@ -262,14 +253,14 @@ function Checkout() {
                         autoComplete="address-level2"
                         placeholder="Your city"
                         required
-                        className={inputClass}
+                        className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
                       />
                     </div>
 
                     <div>
                       <label
                         htmlFor="postalCode"
-                        className={labelClass}
+                        className="mb-2 block text-sm font-semibold text-neutral-700"
                       >
                         PIN code
                       </label>
@@ -285,13 +276,16 @@ function Checkout() {
                         placeholder="6-digit PIN code"
                         title="Enter a valid 6-digit PIN code"
                         required
-                        className={inputClass}
+                        className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="country" className={labelClass}>
+                    <label
+                      htmlFor="country"
+                      className="mb-2 block text-sm font-semibold text-neutral-700"
+                    >
                       Country
                     </label>
 
@@ -301,7 +295,7 @@ function Checkout() {
                       autoComplete="country-name"
                       defaultValue="India"
                       required
-                      className={inputClass}
+                      className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
                     >
                       <option value="India">India</option>
                     </select>
@@ -309,201 +303,191 @@ function Checkout() {
                 </div>
               </section>
 
-              {/* Payment */}
-              <section>
-                <div className="mb-5 flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-neutral-200">
-                    <CreditCard size={17} strokeWidth={1.7} />
+              {/* Payment information */}
+              <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100">
+                    <CreditCard size={21} className="text-neutral-800" />
                   </div>
 
                   <div>
-                    <h2 className="text-base font-semibold text-neutral-950">
+                    <h2 className="text-lg font-bold text-neutral-900">
                       Payment
                     </h2>
-                    <p className="mt-1 text-sm text-neutral-500">
-                      Secure payment with Stripe
+                    <p className="text-sm text-neutral-500">
+                      Secure payment powered by Stripe
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 rounded-lg border border-neutral-200 bg-white p-4">
+                <div className="flex gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
                   <ShieldCheck
-                    size={19}
-                    strokeWidth={1.7}
-                    className="mt-0.5 shrink-0 text-neutral-700"
+                    size={22}
+                    className="mt-0.5 shrink-0 text-green-600"
                   />
 
                   <div>
-                    <p className="text-sm font-medium text-neutral-900">
-                      Your payment is protected
+                    <p className="font-semibold text-neutral-900">
+                      Secure checkout
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-neutral-500">
-                      You'll continue to Stripe's secure checkout
-                      to complete your payment.
+                    <p className="mt-1 text-sm leading-6 text-neutral-600">
+                      You will be redirected to Stripe to complete your payment
+                      securely. Your card details are not entered on this page.
                     </p>
                   </div>
                 </div>
               </section>
 
-              {/* Submit */}
-              <div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-neutral-950 px-6 py-3.5 text-sm font-semibold text-white transition duration-200 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span
-                        aria-hidden="true"
-                        className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                      />
-                      Connecting to payment...
-                    </>
-                  ) : (
-                    <>
-                      Continue to payment
-                      <ArrowRight size={17} />
-                    </>
-                  )}
-                </button>
+              {/* Submit button */}
+              <button
+                type="submit"
+                disabled={isSubmitting || items.length === 0}
+                className="flex w-full items-center justify-center gap-3 rounded-full bg-neutral-950 px-6 py-4 text-sm font-bold text-white shadow-lg transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span
+                      className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                      aria-hidden="true"
+                    />
+                    Redirecting to payment...
+                  </>
+                ) : (
+                  <>
+                    <Lock size={17} />
+                    Continue to Payment
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
 
-                <p className="mt-3 text-center text-xs leading-5 text-neutral-500">
-                  <Lock
-                    size={12}
-                    className="mr-1 inline-block align-[-2px]"
-                  />
-                  Secure checkout · Your card details stay protected
-                </p>
-              </div>
+              <p className="text-center text-xs leading-5 text-neutral-500">
+                By continuing, you agree to complete your purchase through our
+                secure payment provider.
+              </p>
             </form>
           </div>
 
           {/* Order summary */}
-          <aside className="min-w-0 lg:sticky lg:top-6">
-            <div className="rounded-xl border border-neutral-200 bg-white p-5 sm:p-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-neutral-950">
-                  Order summary
-                </h2>
+          <aside className="h-fit rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7 lg:sticky lg:top-15">
+            <h2 className="text-xl font-bold text-neutral-950">
+              Order summary
+            </h2>
 
-                <span className="text-xs text-neutral-500">
-                  {items.length} {items.length === 1 ? "item" : "items"}
+            <div className="mt-6 space-y-4">
+              {items.map((item) => (
+                <div
+                  key={`${item.product.id}-${item.size}`}
+                  className="flex items-start gap-3"
+                >
+                  {/* Product image */}
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
+                    {item.product.image ? (
+                      <img
+                        src={item.product.image}
+                        alt={item.product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <CreditCard size={22} className="text-neutral-400" />
+                    )}
+                  </div>
+
+                  {/* Product details */}
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-2 text-sm font-semibold text-neutral-900">
+                      {item.product.name}
+                    </p>
+
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Size: {item.size} · Qty: {item.quantity}
+                    </p>
+
+                    <p className="mt-2 text-sm font-bold text-neutral-900">
+                      ₹
+                      {(
+                        Number(item.product.price) * item.quantity
+                      ).toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="my-6 border-t border-neutral-200" />
+
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-neutral-600">Subtotal</span>
+                <span className="font-semibold text-neutral-900">
+                  ₹{Number(cartTotal).toLocaleString("en-IN")}
                 </span>
               </div>
 
-              <div className="mt-6 space-y-5">
-                {items.map((item) => (
-                  <div
-                    key={`${item.productId}-${item.size}`}
-                    className="flex items-start gap-3"
-                  >
-                    <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <ShoppingBag
-                            size={22}
-                            className="text-neutral-400"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1 pt-0.5">
-                      <p className="line-clamp-2 text-sm font-medium leading-5 text-neutral-900">
-                        {item.name}
-                      </p>
-
-                      <p className="mt-1.5 text-xs text-neutral-500">
-                        Size {item.size} · Qty {item.quantity}
-                      </p>
-
-                      <p className="mt-2 text-sm font-semibold text-neutral-950">
-                        ₹
-                        {(
-                          Number(item.price) * item.quantity
-                        ).toLocaleString("en-IN")}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-neutral-600">Shipping</span>
+                <span className="font-semibold text-green-600">Free</span>
               </div>
 
-              <div className="my-6 border-t border-dashed border-neutral-200" />
-
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-neutral-500">Subtotal</span>
-                  <span className="font-medium text-neutral-900">
-                    ₹{Number(cartTotal).toLocaleString("en-IN")}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-neutral-500">Shipping</span>
-                  <span className="font-medium text-neutral-900">
-                    Free
-                  </span>
-                </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-neutral-600">Tax</span>
+                <span className="text-neutral-500">Included if applicable</span>
               </div>
+            </div>
 
-              <div className="my-5 border-t border-neutral-200" />
+            <div className="my-6 border-t border-neutral-200" />
 
-              <div className="flex items-end justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-base font-bold text-neutral-950">
+                Total
+              </span>
+              <span className="text-2xl font-black text-neutral-950">
+                ₹{Number(cartTotal).toLocaleString("en-IN")}
+              </span>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <Truck size={19} className="mt-0.5 shrink-0 text-neutral-500" />
+
                 <div>
-                  <p className="text-sm font-semibold text-neutral-950">
-                    Total
+                  <p className="text-sm font-semibold text-neutral-900">
+                    Reliable delivery
                   </p>
-                  <p className="mt-1 text-xs text-neutral-500">
-                    INR · Inclusive of applicable charges
+                  <p className="mt-1 text-xs leading-5 text-neutral-500">
+                    Shipping options are confirmed during order processing.
                   </p>
                 </div>
-
-                <p className="text-2xl font-semibold tracking-tight text-neutral-950">
-                  ₹{Number(cartTotal).toLocaleString("en-IN")}
-                </p>
               </div>
 
-              <div className="mt-6 flex items-start gap-3 rounded-lg bg-neutral-50 p-3.5">
-                <Truck
-                  size={18}
-                  strokeWidth={1.7}
-                  className="mt-0.5 shrink-0 text-neutral-600"
+              <div className="flex items-start gap-3">
+                <ShieldCheck
+                  size={19}
+                  className="mt-0.5 shrink-0 text-neutral-500"
                 />
 
                 <div>
-                  <p className="text-xs font-semibold text-neutral-800">
-                    Delivery to your doorstep
+                  <p className="text-sm font-semibold text-neutral-900">
+                    Secure payment
                   </p>
                   <p className="mt-1 text-xs leading-5 text-neutral-500">
-                    Delivery details will be confirmed with your order.
+                    Your payment is processed securely by Stripe.
                   </p>
                 </div>
               </div>
-
-              <Link
-                to="/cart"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-neutral-500 transition hover:text-neutral-950"
-              >
-                <ArrowLeft size={15} />
-                Edit bag
-              </Link>
             </div>
 
-            <div className="mt-4 flex items-center justify-center gap-2 py-2 text-xs text-neutral-500">
-              <ShieldCheck size={15} />
-              Secure payments powered by Stripe
-            </div>
+            <Link
+              to="/cart"
+              className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-neutral-600 transition hover:text-neutral-950"
+            >
+              <ArrowLeft size={16} />
+              Edit cart
+            </Link>
           </aside>
         </div>
       </Container>
-    </main>
+    </div>
   );
 }
 
