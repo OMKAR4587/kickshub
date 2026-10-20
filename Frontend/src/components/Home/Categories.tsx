@@ -8,7 +8,7 @@ function Categories() {
   const sectionRef = useScrollReveal();
 
   return (
-    <section className="bg-[#f8fafc]">
+    <section >
       <Container>
         <div className="mb-10">
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-purple-600">
