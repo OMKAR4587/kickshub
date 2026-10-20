@@ -298,6 +298,7 @@ function Hero() {
               className="
                 hero-description
                 mt-6
+                ml-1
                 max-w-md
                 text-sm
                 leading-6
@@ -317,7 +318,7 @@ function Hero() {
                 hero-actions
                 mt-7
                 flex
-                flex-col
+                
                 gap-3
                 min-[400px]:flex-row
                 sm:mt-8
@@ -334,7 +335,7 @@ function Hero() {
                   gap-3
                   rounded-full
                   bg-neutral-950
-                  px-6
+                  px-2
                   py-3.5
                   text-sm
                   font-bold
@@ -387,7 +388,7 @@ function Hero() {
             </div>
 
             {/* Stats */}
-            <div className="mt-8 flex items-center gap-6 sm:mt-10 sm:gap-8">
+            <div className="mt-8 pl-1 flex  gap-6 items-center justify-center sm:justify-start sm:mt-10 sm:gap-8">
               <div>
                 <p className="text-xl font-black text-neutral-950 sm:text-2xl">
                   24K+
