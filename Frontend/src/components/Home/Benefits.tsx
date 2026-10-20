@@ -29,7 +29,7 @@ function Benefits() {
     const sectionRef = useScrollReveal();
 
   return (
-    <section className="border-y border-neutral-100 py-16">
+    <section className="border-y border-neutral-100 pb-20">
       <Container>
         <div ref={sectionRef} className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((benefit) => {

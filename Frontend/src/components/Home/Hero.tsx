@@ -211,10 +211,10 @@ function Hero() {
         <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-blue-400/15 blur-[90px] sm:h-80 sm:w-80 lg:h-96 lg:w-96" />
 
         {/* Purple glow */}
-        <div className="absolute -right-32 top-0 h-72 w-72 rounded-full bg-purple-400/15 blur-[100px] sm:h-96 sm:w-96 lg:h-[30rem] lg:w-[30rem]" />
+        <div className="absolute -right-32 top-0 h-72 w-72 rounded-full bg-purple-400/15 blur-[100px] sm:h-96 sm:w-96 lg:h-120 lg:w-120]" />
 
         {/* Bottom glow */}
-        <div className="absolute bottom-[-10rem] left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[90px] sm:h-96 sm:w-96" />
+        <div className="absolute -bottom-40 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[90px] sm:h-96 sm:w-96" />
 
         {/* Grid */}
         <div
@@ -287,7 +287,7 @@ function Hero() {
               </span>
 
               <span className="block overflow-hidden">
-                <span className="hero-title-line block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="hero-title-line block bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Different.
                 </span>
               </span>
