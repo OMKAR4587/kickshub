@@ -1,46 +1,23 @@
-import { useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
 
-import Container from "../../components/ui/Container"
-import ProductGrid from "../../components/product/ProductGrid"
-import ProductFilters from "../../components/product/ProductFilter"
-import useProductFilters from "../../hooks/useProductFilter"
-import ProductFilterPanel from "../../components/product/ProductFilterPanel"
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
-import { getProducts } from "../../services/api"
-import type { Product as ProductType } from "../../types/Product"
+import Container from "../../components/ui/Container";
+import ProductGrid from "../../components/product/ProductGrid";
+import ProductFilters from "../../components/product/ProductFilter";
+import ProductFilterPanel from "../../components/product/ProductFilterPanel";
+import useProductFilters from "../../hooks/useProductFilter";
+
+import { getProducts } from "../../services/api";
+import type { Product as ProductType } from "../../types/Product";
 
 function Product() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [products, setProducts] = useState<ProductType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-
-  const [searchParams] = useSearchParams()
-
-  useEffect(() => {
-    getProducts()
-      .then((data) => {
-        if (!data.success) {
-          throw new Error(
-            data.message || "Failed to load products",
-          )
-        }
-
-        setProducts(data.products)
-      })
-      .catch((err) => {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load products",
-        )
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
+  const [searchParams] = useSearchParams();
 
   const {
     search,
@@ -48,101 +25,104 @@ function Product() {
     category,
     setCategory,
     sort,
+    setSort,
+    minPrice,
+    setMinPrice,
     maxPrice,
     setMaxPrice,
-    setSort,
     categories,
     filteredProducts,
-  } = useProductFilters(products)
+  } = useProductFilters(products);
 
-  /*
-   * Handle search from Navbar
-   * /products?focus=search
-   */
   useEffect(() => {
-    if (searchParams.get("focus") !== "search") {
-      return
-    }
+    let cancelled = false;
 
-    const focusSearchInput = () => {
-      const searchInput = document.querySelector(
-        "input",
-      ) as HTMLInputElement | null
+    getProducts()
+      .then((data) => {
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load products");
+        }
 
-      if (searchInput) {
-        searchInput.focus()
-        searchInput.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        })
-      }
-    }
-
-    const timer = window.setTimeout(
-      focusSearchInput,
-      100,
-    )
+        if (!cancelled) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load products"
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
 
     return () => {
-      window.clearTimeout(timer)
-    }
-  }, [searchParams, loading])
+      cancelled = true;
+    };
+  }, []);
 
-  /*
-   * Handle category navigation
-   * /products?category=Running
-   */
   useEffect(() => {
-    const categoryFromUrl = searchParams.get("category")
+    if (searchParams.get("focus") !== "search") return;
 
-    if (!categoryFromUrl || categories.length === 0) {
-      return
-    }
+    const timer = window.setTimeout(() => {
+      const searchInput = document.querySelector(
+        'input[type="search"]'
+      ) as HTMLInputElement | null;
+
+      searchInput?.focus();
+      searchInput?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 100);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams, loading]);
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (!categoryFromUrl || categories.length === 0) return;
 
     const matchingCategory = categories.find(
-      (item) =>
-        item.toLowerCase() ===
-        categoryFromUrl.toLowerCase(),
-    )
+      (item) => item.toLowerCase() === categoryFromUrl.toLowerCase()
+    );
 
     if (matchingCategory) {
-      setCategory(matchingCategory)
+      setCategory(matchingCategory);
     }
-  }, [searchParams, categories, setCategory])
+  }, [searchParams, categories, setCategory]);
 
   if (loading) {
     return (
-      <section className="py-16 sm:py-20 lg:py-10">
+      <section className="py-4 sm:py-8 lg:py-10">
         <Container>
           <div className="flex min-h-[40vh] items-center justify-center">
-            <p className="text-neutral-500">
-              Loading products...
-            </p>
+            <p className="text-neutral-500">Loading products...</p>
           </div>
         </Container>
       </section>
-    )
+    );
   }
 
   if (error) {
     return (
-      <section className="py-16 sm:py-20 lg:py-10">
+      <section className="py-4 sm:py-8 lg:py-10">
         <Container>
           <div className="flex min-h-[40vh] items-center justify-center">
-            <p className="text-red-500">
-              {error}
-            </p>
+            <p className="text-red-500">{error}</p>
           </div>
         </Container>
       </section>
-    )
+    );
   }
 
   return (
-    <section className="py-16 sm:py-20 lg:py-10">
+    <section className="py-4 sm:py-8 lg:py-10">
       <Container>
-
-        {/* Header */}
         <div className="mb-10 max-w-2xl">
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-purple-600">
             Shop
@@ -153,13 +133,12 @@ function Product() {
           </h1>
 
           <p className="mt-4 text-base leading-7 text-neutral-500">
-            Explore the latest sneakers built for movement,
-            streetwear, and everyday style.
+            Explore the latest sneakers built for movement, streetwear, and
+            everyday style.
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="mb-10">
+        <div className="mb-6">
           <ProductFilters
             search={search}
             setSearch={setSearch}
@@ -168,44 +147,40 @@ function Product() {
             sort={sort}
             setSort={setSort}
             categories={categories}
-            onFilterClick={() =>
-              setIsFilterOpen(
-                (previous) => !previous,
-              )
-            }
+            onFilterClick={() => setIsFilterOpen((previous) => !previous)}
           />
         </div>
 
-        <ProductFilterPanel
-          isOpen={isFilterOpen}
-          maxPrice={maxPrice}
-          setMaxPrice={setMaxPrice}
-          onClose={() =>
-            setIsFilterOpen(false)
-          }
-        />
+        <div className="mb-10">
+          <ProductFilterPanel
+            isOpen={isFilterOpen}
+            minPrice={minPrice}
+            setMinPrice={setMinPrice}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
+            onClose={() => setIsFilterOpen(false)}
+          />
+        </div>
 
-        {/* Result count */}
         <div className="mb-6 flex items-center justify-between border-b border-neutral-100 pb-5">
           <p className="text-sm text-neutral-500">
             Showing{" "}
             <span className="font-semibold text-neutral-900">
               {filteredProducts.length}
             </span>{" "}
-            {filteredProducts.length === 1
-              ? "product"
-              : "products"}
+            {filteredProducts.length === 1 ? "product" : "products"}
+          </p>
+
+          <p className="text-xs text-neutral-500">
+            ₹{minPrice.toLocaleString("en-IN")} – ₹
+            {maxPrice.toLocaleString("en-IN")}
           </p>
         </div>
 
-        {/* Products */}
-        <ProductGrid
-          products={filteredProducts}
-        />
-
+        <ProductGrid products={filteredProducts} />
       </Container>
     </section>
-  )
+  );
 }
 
-export default Product
+export default Product;

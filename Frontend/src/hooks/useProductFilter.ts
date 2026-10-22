@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import type { Product } from "../types/Product";
 
@@ -12,15 +13,13 @@ function useProductFilters(products: Product[]) {
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState<SortOption>("featured");
 
-  // INR
+  const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
 
   const categories = useMemo(
     () => [
       "All",
-      ...Array.from(
-        new Set(products.map((product) => product.category))
-      ),
+      ...Array.from(new Set(products.map((product) => product.category))),
     ],
     [products]
   );
@@ -36,32 +35,29 @@ function useProductFilters(products: Product[]) {
       const matchesCategory =
         category === "All" || product.category === category;
 
-      const matchesPrice = product.price <= maxPrice;
+      const price = Number(product.price);
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesPrice
-      );
+      const matchesPrice =
+        Number.isFinite(price) &&
+        price >= minPrice &&
+        price <= maxPrice;
+
+      return matchesSearch && matchesCategory && matchesPrice;
     });
 
     return [...result].sort((a, b) => {
       switch (sort) {
         case "price-low":
           return a.price - b.price;
-
         case "price-high":
           return b.price - a.price;
-
         case "newest":
           return Number(b.isNew) - Number(a.isNew);
-
-        case "featured":
         default:
           return 0;
       }
     });
-  }, [products, search, category, sort, maxPrice]);
+  }, [products, search, category, sort, minPrice, maxPrice]);
 
   return {
     search,
@@ -70,6 +66,8 @@ function useProductFilters(products: Product[]) {
     setCategory,
     sort,
     setSort,
+    minPrice,
+    setMinPrice,
     maxPrice,
     setMaxPrice,
     categories,

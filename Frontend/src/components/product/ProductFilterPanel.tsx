@@ -1,140 +1,225 @@
-import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+
+import { useEffect, useRef, useState } from "react";
+import { X, RotateCcw } from "lucide-react";
 import gsap from "gsap";
 
 type ProductFilterPanelProps = {
   isOpen: boolean;
+  minPrice: number;
+  setMinPrice: (value: number) => void;
   maxPrice: number;
   setMaxPrice: (value: number) => void;
   onClose: () => void;
 };
 
+const PRICE_LIMIT = 20000;
+
 function ProductFilterPanel({
   isOpen,
+  minPrice,
+  setMinPrice,
   maxPrice,
   setMaxPrice,
   onClose,
 }: ProductFilterPanelProps) {
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const [draftMinPrice, setDraftMinPrice] = useState(minPrice);
+  const [draftMaxPrice, setDraftMaxPrice] = useState(maxPrice);
+
+  useEffect(() => {
+    if (isOpen) {
+      setDraftMinPrice(minPrice);
+      setDraftMaxPrice(maxPrice);
+    }
+  }, [isOpen, minPrice, maxPrice]);
 
   useEffect(() => {
     const panel = panelRef.current;
-
     if (!panel) return;
+
+    gsap.killTweensOf(panel);
 
     if (isOpen) {
       gsap.set(panel, {
         display: "block",
         height: 0,
         opacity: 0,
-        y: -10,
+        y: -8,
       });
 
       gsap.to(panel, {
         height: "auto",
         opacity: 1,
         y: 0,
-        duration: 0.4,
+        duration: 0.3,
         ease: "power3.out",
       });
     } else {
       gsap.to(panel, {
         height: 0,
         opacity: 0,
-        y: -10,
-        duration: 0.25,
+        y: -8,
+        duration: 0.2,
         ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(panel, { display: "none" });
+        },
       });
     }
+
+    return () => {
+      gsap.killTweensOf(panel);
+    };
   }, [isOpen]);
+
+  const handleApply = () => {
+    if (draftMinPrice > draftMaxPrice) return;
+
+    setMinPrice(draftMinPrice);
+    setMaxPrice(draftMaxPrice);
+    onClose();
+  };
+
+  const handleReset = () => {
+    setDraftMinPrice(0);
+    setDraftMaxPrice(PRICE_LIMIT);
+  };
+
+  const formatPrice = (price: number) =>
+    `₹${price.toLocaleString("en-IN")}`;
 
   return (
     <div
       ref={panelRef}
       className="overflow-hidden"
-      style={{ height: 0 }}
+      style={{ height: 0, display: "none" }}
+      aria-hidden={!isOpen}
     >
       <div className="mt-4 rounded-3xl border border-neutral-200 bg-neutral-50 p-5 sm:p-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-neutral-900">
-              Filters
+            <h2 className="text-lg font-bold text-neutral-900">
+              Price filters
             </h2>
-
             <p className="mt-1 text-sm text-neutral-500">
-              Refine your results.
+              तुझ्या बजेटनुसार sneakers निवड.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-neutral-600 transition hover:bg-neutral-100"
+            aria-label="Close filters"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-neutral-600 hover:bg-neutral-100"
           >
-            <X size={17} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Filters */}
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          {/* Price */}
-          <div>
-            <p className="mb-3 text-sm font-semibold text-neutral-900">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="text-sm font-semibold text-neutral-800">
+              Minimum price
+            </span>
+
+            <input
+              type="number"
+              min={0}
+              max={PRICE_LIMIT}
+              step={100}
+              value={draftMinPrice}
+              onChange={(event) => {
+                const value = event.currentTarget.valueAsNumber;
+                setDraftMinPrice(
+                  Number.isFinite(value)
+                    ? Math.min(PRICE_LIMIT, Math.max(0, value))
+                    : 0
+                );
+              }}
+              className="mt-2 w-full rounded-xl border border-neutral-200 bg-white p-3 text-base outline-none focus:border-purple-500"
+            />
+
+            <input
+              type="range"
+              min={0}
+              max={PRICE_LIMIT}
+              step={100}
+              value={draftMinPrice}
+              onChange={(event) =>
+                setDraftMinPrice(Number(event.target.value))
+              }
+              aria-label="Minimum price slider"
+              className="mt-3 w-full accent-purple-600"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-semibold text-neutral-800">
               Maximum price
-            </p>
+            </span>
 
-            <div className="flex flex-wrap gap-2">
-              {[4500, 5000, 6000, 7000, 10000].map((price) => (
-                <button
-                  key={price}
-                  type="button"
-                  onClick={() => setMaxPrice(price)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                    maxPrice === price
-                      ? "bg-purple-600 text-white"
-                      : "bg-white text-neutral-600 hover:bg-neutral-100"
-                  }`}
-                >
-                  {price === 10000
-                    ? "All prices"
-                    : `Under ₹${price.toLocaleString("en-IN")}`}
-                </button>
-              ))}
-            </div>
-          </div>
+            <input
+              type="number"
+              min={0}
+              max={PRICE_LIMIT}
+              step={100}
+              value={draftMaxPrice}
+              onChange={(event) => {
+                const value = event.currentTarget.valueAsNumber;
+                setDraftMaxPrice(
+                  Number.isFinite(value)
+                    ? Math.min(PRICE_LIMIT, Math.max(0, value))
+                    : 0
+                );
+              }}
+              className="mt-2 w-full rounded-xl border border-neutral-200 bg-white p-3 text-base outline-none focus:border-purple-500"
+            />
 
-          {/* Availability */}
-          <div>
-            <p className="mb-3 text-sm font-semibold text-neutral-900">
-              Availability
-            </p>
+            <input
+              type="range"
+              min={0}
+              max={PRICE_LIMIT}
+              step={100}
+              value={draftMaxPrice}
+              onChange={(event) =>
+                setDraftMaxPrice(Number(event.target.value))
+              }
+              aria-label="Maximum price slider"
+              className="mt-3 w-full accent-purple-600"
+            />
+          </label>
+        </div>
 
-            <label className="inline-flex cursor-pointer items-center gap-3 rounded-full bg-white px-4 py-2.5 text-sm text-neutral-700">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-purple-600"
-              />
-
-              In stock only
-            </label>
+        <div className="mt-5 rounded-xl bg-white p-4 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-neutral-500">Selected range</span>
+            <span className="font-bold text-purple-700">
+              {formatPrice(draftMinPrice)} – {formatPrice(draftMaxPrice)}
+            </span>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="mt-6 flex justify-end gap-3 border-t border-neutral-200 pt-5">
+        {draftMinPrice > draftMaxPrice && (
+          <p className="mt-3 text-sm text-red-600" role="alert">
+            Minimum price ही maximum price पेक्षा जास्त असू शकत नाही.
+          </p>
+        )}
+
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-neutral-200 pt-5 sm:flex-row sm:justify-end">
           <button
             type="button"
-            onClick={() => setMaxPrice(10000)}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-neutral-600 transition hover:bg-white"
+            onClick={handleReset}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-neutral-600 hover:bg-white"
           >
+            <RotateCcw size={15} />
             Reset
           </button>
 
           <button
             type="button"
-            onClick={onClose}
-            className="rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800"
+            onClick={handleApply}
+            disabled={draftMinPrice > draftMaxPrice}
+            className="min-h-11 rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Apply filters
           </button>
