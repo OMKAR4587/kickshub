@@ -1,18 +1,17 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Container from "../../components/ui/Container";
 import ProductGrid from "../../components/product/ProductGrid";
-import ProductFilters from "../../components/product/ProductFilter";
-import ProductFilterPanel from "../../components/product/ProductFilterPanel";
+import ProductFilters, {
+  type AppliedFilters,
+} from "../../components/product/ProductFilter";
 import useProductFilters from "../../hooks/useProductFilter";
 
 import { getProducts } from "../../services/api";
 import type { Product as ProductType } from "../../types/Product";
 
 function Product() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -96,6 +95,12 @@ function Product() {
     }
   }, [searchParams, categories, setCategory]);
 
+  const handleApplyFilters = (filters: AppliedFilters) => {
+    setCategory(filters.category);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+  };
+
   if (loading) {
     return (
       <section className="py-4 sm:py-8 lg:py-10">
@@ -147,22 +152,14 @@ function Product() {
             sort={sort}
             setSort={setSort}
             categories={categories}
-            onFilterClick={() => setIsFilterOpen((previous) => !previous)}
-          />
-        </div>
-
-        <div className="mb-10">
-          <ProductFilterPanel
-            isOpen={isFilterOpen}
             minPrice={minPrice}
-            setMinPrice={setMinPrice}
             maxPrice={maxPrice}
-            setMaxPrice={setMaxPrice}
-            onClose={() => setIsFilterOpen(false)}
+            priceLimit={20000}
+            onApplyFilters={handleApplyFilters}
           />
         </div>
 
-        <div className="mb-6 flex items-center justify-between border-b border-neutral-100 pb-5">
+        <div className="mb-6 flex items-center justify-between gap-3 border-b border-neutral-100 pb-5">
           <p className="text-sm text-neutral-500">
             Showing{" "}
             <span className="font-semibold text-neutral-900">
@@ -171,7 +168,7 @@ function Product() {
             {filteredProducts.length === 1 ? "product" : "products"}
           </p>
 
-          <p className="text-xs text-neutral-500">
+          <p className="text-right text-xs text-neutral-500">
             ₹{minPrice.toLocaleString("en-IN")} – ₹
             {maxPrice.toLocaleString("en-IN")}
           </p>

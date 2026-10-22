@@ -22,7 +22,6 @@ type ProductFiltersProps = {
   sort: SortOption;
   setSort: (value: SortOption) => void;
   categories: string[];
-  onFilterClick?: () => void;
   minPrice?: number;
   maxPrice?: number;
   priceLimit?: number;
@@ -43,28 +42,44 @@ function ProductFilters({
   onApplyFilters,
 }: ProductFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-
   const [draftCategory, setDraftCategory] = useState(category);
-  const [draftMinPrice, setDraftMinPrice] = useState(minPrice);
-  const [draftMaxPrice, setDraftMaxPrice] = useState(maxPrice);
+
+  // Price input values remain strings while typing.
+  const [draftMinPrice, setDraftMinPrice] = useState(String(minPrice));
+  const [draftMaxPrice, setDraftMaxPrice] = useState(String(maxPrice));
 
   useEffect(() => {
     if (!isOpen) {
       setDraftCategory(category);
-      setDraftMinPrice(minPrice);
-      setDraftMaxPrice(maxPrice);
+      setDraftMinPrice(String(minPrice));
+      setDraftMaxPrice(String(maxPrice));
     }
   }, [category, minPrice, maxPrice, isOpen]);
 
+  const minValue =
+    draftMinPrice.trim() === "" ? NaN : Number(draftMinPrice);
+
+  const maxValue =
+    draftMaxPrice.trim() === "" ? NaN : Number(draftMaxPrice);
+
+  const invalidPrices =
+    !Number.isFinite(minValue) ||
+    !Number.isFinite(maxValue) ||
+    minValue < 0 ||
+    maxValue < 0 ||
+    minValue > priceLimit ||
+    maxValue > priceLimit ||
+    minValue > maxValue;
+
   const applyFilters = () => {
-    if (draftMinPrice > draftMaxPrice) return;
+    if (invalidPrices) return;
 
     setCategory(draftCategory);
 
     onApplyFilters?.({
       category: draftCategory,
-      minPrice: draftMinPrice,
-      maxPrice: draftMaxPrice,
+      minPrice: minValue,
+      maxPrice: maxValue,
     });
 
     setIsOpen(false);
@@ -72,14 +87,14 @@ function ProductFilters({
 
   const resetFilters = () => {
     setDraftCategory("All");
-    setDraftMinPrice(0);
-    setDraftMaxPrice(priceLimit);
+    setDraftMinPrice("0");
+    setDraftMaxPrice(String(priceLimit));
   };
 
   return (
     <>
+      {/* Search, category shortcuts and sorting */}
       <div className="space-y-5">
-        {/* Search and controls */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative min-w-0 flex-1">
             <Search
@@ -121,7 +136,6 @@ function ProductFilters({
           </select>
         </div>
 
-        {/* Quick category buttons */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           {categories.map((item) => (
             <button
@@ -142,24 +156,26 @@ function ProductFilters({
 
       {/* Backdrop */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]"
+        <button
+          type="button"
+          className="fixed inset-0 z-50 cursor-default bg-black/40 backdrop-blur-[2px]"
           onClick={() => setIsOpen(false)}
-          aria-hidden="true"
+          aria-label="Close filter drawer"
         />
       )}
 
-      {/* Filter drawer */}
+      {/* Drawer */}
       <aside
         role="dialog"
-        aria-modal={isOpen ? "true" : undefined}
+        aria-modal={isOpen}
         aria-labelledby="filter-title"
         aria-hidden={!isOpen}
         className={`fixed inset-y-0 right-0 z-[51] flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
-          isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
+          isOpen
+            ? "translate-x-0"
+            : "pointer-events-none translate-x-full"
         }`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-5 sm:px-7">
           <div>
             <h2
@@ -183,7 +199,6 @@ function ProductFilters({
           </button>
         </div>
 
-        {/* Scrollable filter options */}
         <div className="flex-1 space-y-7 overflow-y-auto px-5 py-6 sm:px-7">
           {/* Category */}
           <section>
@@ -220,25 +235,26 @@ function ProductFilters({
               <h3 className="text-sm font-semibold text-neutral-900">
                 Price range
               </h3>
-
               <span className="text-xs text-neutral-500">INR (₹)</span>
             </div>
 
             <div className="mb-5 grid grid-cols-2 gap-3">
               <label className="space-y-2">
                 <span className="text-xs text-neutral-500">Minimum</span>
+
                 <div className="flex items-center rounded-xl border border-neutral-200 px-3">
                   <span className="text-sm text-neutral-500">₹</span>
+
                   <input
                     type="number"
                     min={0}
                     max={priceLimit}
+                    step={100}
                     value={draftMinPrice}
                     onChange={(event) =>
-                      setDraftMinPrice(
-                        Math.max(0, Number(event.target.value) || 0)
-                      )
+                      setDraftMinPrice(event.target.value)
                     }
+                    aria-label="Minimum price"
                     className="w-full min-w-0 bg-transparent px-2 py-3 text-base outline-none"
                   />
                 </div>
@@ -246,37 +262,41 @@ function ProductFilters({
 
               <label className="space-y-2">
                 <span className="text-xs text-neutral-500">Maximum</span>
+
                 <div className="flex items-center rounded-xl border border-neutral-200 px-3">
                   <span className="text-sm text-neutral-500">₹</span>
+
                   <input
                     type="number"
                     min={0}
                     max={priceLimit}
+                    step={100}
                     value={draftMaxPrice}
                     onChange={(event) =>
-                      setDraftMaxPrice(
-                        Math.min(
-                          priceLimit,
-                          Math.max(0, Number(event.target.value) || 0)
-                        )
-                      )
+                      setDraftMaxPrice(event.target.value)
                     }
+                    aria-label="Maximum price"
                     className="w-full min-w-0 bg-transparent px-2 py-3 text-base outline-none"
                   />
                 </div>
               </label>
             </div>
 
+            {/* Maximum price slider */}
             <input
               type="range"
               min={0}
               max={priceLimit}
-              step={500}
-              value={Math.min(draftMaxPrice, priceLimit)}
-              onChange={(event) =>
-                setDraftMaxPrice(Number(event.target.value))
+              step={100}
+              value={
+                Number.isFinite(maxValue)
+                  ? Math.min(priceLimit, Math.max(0, maxValue))
+                  : 0
               }
-              aria-label="Maximum price"
+              onChange={(event) =>
+                setDraftMaxPrice(event.target.value)
+              }
+              aria-label="Maximum price slider"
               className="w-full accent-neutral-950"
             />
 
@@ -285,9 +305,18 @@ function ProductFilters({
               <span>₹{priceLimit.toLocaleString("en-IN")}</span>
             </div>
 
-            {draftMinPrice > draftMaxPrice && (
+            <p className="mt-3 text-sm text-neutral-600">
+              Selected: ₹
+              {(Number(draftMinPrice) || 0).toLocaleString("en-IN")}
+              {" – "}₹
+              {(Number(draftMaxPrice) || 0).toLocaleString("en-IN")}
+            </p>
+
+            {invalidPrices && (
               <p className="mt-3 text-sm text-red-600" role="alert">
-                Minimum price cannot exceed maximum price.
+                Enter valid prices between ₹0 and ₹
+                {priceLimit.toLocaleString("en-IN")}. Minimum price
+                cannot exceed maximum price.
               </p>
             )}
           </section>
@@ -308,7 +337,7 @@ function ProductFilters({
             <button
               type="button"
               onClick={applyFilters}
-              disabled={draftMinPrice > draftMaxPrice}
+              disabled={invalidPrices}
               className="min-h-12 flex-[1.4] rounded-xl bg-neutral-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Apply filters
