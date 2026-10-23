@@ -170,7 +170,7 @@ function ProductFilters({
         aria-modal={isOpen}
         aria-labelledby="filter-title"
         aria-hidden={!isOpen}
-        className={`fixed inset-y-0 right-0 z-[51] flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+        className={`fixed inset-y-0 right-0 z-51 flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
           isOpen
             ? "translate-x-0"
             : "pointer-events-none translate-x-full"

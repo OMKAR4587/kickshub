@@ -1,23 +1,32 @@
-const API_URL = "http://localhost:5000/api"
+import type { Product } from "../types/Product";
 
-export async function getProducts() {
-  const response = await fetch(`${API_URL}/products`)
+const API_URL = "http://localhost:5000/api";
+
+export async function getProducts(): Promise<Product[]> {
+  const response = await fetch(`${API_URL}/products`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch products")
+    throw new Error("Failed to fetch products");
   }
 
-  return response.json()
+  return response.json() as Promise<Product[]>;
 }
 
-export async function getProduct(id: string) {
-  const response = await fetch(`${API_URL}/products/${id}`)
+export type GetProductResponse = {
+  success: boolean;
+  product: Product;
+};
+
+export async function getProduct(
+  id: string
+): Promise<GetProductResponse> {
+  const response = await fetch(`${API_URL}/products/${id}`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch product")
+    throw new Error("Failed to fetch product");
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function registerUser(data: {

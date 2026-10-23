@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowDownUp, ArrowRight, RefreshCw, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowDownUp, ArrowRight, RefreshCw, Search } from "lucide-react";
 
 import Container from "../../components/ui/Container";
 import ProductGrid from "../../components/product/ProductGrid";
@@ -106,7 +106,7 @@ function Product() {
   const resetFilters = () => {
     setSearch("");
     setCategory("All");
-    setSort("default");
+    setSort("newest");
     setMinPrice(0);
     setMaxPrice(20000);
   };
@@ -123,7 +123,7 @@ function Product() {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6">
               {Array.from({ length: 8 }).map((_, index) => (
                 <div key={index}>
-                  <div className="aspect-[4/5] rounded-2xl bg-neutral-200" />
+                  <div className="aspect-4/5 rounded-2xl bg-neutral-200" />
                   <div className="mt-4 h-4 w-3/4 rounded bg-neutral-200" />
                   <div className="mt-3 h-4 w-1/3 rounded bg-neutral-200" />
                 </div>
@@ -146,7 +146,7 @@ function Product() {
             <h2 className="text-2xl font-bold tracking-tight text-neutral-950">
               Couldn't load the collection
             </h2>
-            <p className="mt-3 break-words text-sm leading-6 text-neutral-500">
+            <p className="mt-3 wrap-break-word text-sm leading-6 text-neutral-500">
               {error}
             </p>
             <button
