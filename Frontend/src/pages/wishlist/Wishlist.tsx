@@ -83,9 +83,9 @@ function Wishlist() {
 
   if (loading) {
     return (
-      <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
+      <section className="min-h-screen relative overflow-hidden py-14 sm:py-20 lg:py-10">
         <Container>
-          <div className="flex min-h-[360px] items-center justify-center">
+          <div className="flex min-h-90 items-center justify-center">
             <p className="text-neutral-500">
               Loading wishlist...
             </p>
@@ -99,7 +99,7 @@ function Wishlist() {
     return (
       <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
         <Container>
-          <div className="flex min-h-[360px] items-center justify-center">
+          <div className="flex min-h-90 items-center justify-center">
             <p className="text-red-500">
               {error}
             </p>
@@ -110,7 +110,7 @@ function Wishlist() {
   }
 
   return (
-    <section className="relative overflow-hidden py-14 sm:py-20 lg:py-10">
+    <section className="min-h-screen -mb-12 relative overflow-hidden pt-10 pb-20 sm:py-20 lg:pt-10 ">
       <Container>
 
         {/* Header */}

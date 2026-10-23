@@ -236,6 +236,7 @@ function Hero() {
         <div
           className="
             grid
+            min-h-screen
             items-center
             gap-8
             py-10

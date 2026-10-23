@@ -219,7 +219,7 @@ function ProductDetail() {
                 )}
 
                 <span
-                  className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-semibold sm:text-xs ${
+                  className={`flex items-center rounded-2xl gap-1.5 px-3 py-2 text-[10px] font-semibold sm:text-xs ${
                     product.inStock
                       ? "bg-purple-50 text-purple-700"
                       : "bg-neutral-200 text-neutral-600"

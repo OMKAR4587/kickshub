@@ -58,7 +58,7 @@ function Cart() {
 
   if (items.length === 0) {
     return (
-      <section className="py-20 sm:py-24">
+      <section className="min-h-screen -mt-13 flex items-center py-20 sm:py-24">
         <Container>
           <div className="mx-auto max-w-xl text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100">
@@ -95,7 +95,7 @@ function Cart() {
   return (
     <section
       ref={pageRef}
-      className="py-12 sm:py-14 lg:py-10"
+      className="min-h-screen py-12 sm:py-14 lg:py-10"
     >
       <Container>
         {/* Header */}
