@@ -92,7 +92,6 @@ function ProductDetail() {
       });
 
       gsap.from(".product-info > *", {
-        opacity: 0,
         y: 16,
         duration: 0.5,
         stagger: 0.06,
@@ -115,7 +114,8 @@ function ProductDetail() {
       showToast("Could not update wishlist", "error");
     }
   };
-
+  console.log(product)
+   console.log(selectedSize)
   // Add to cart
   const handleAddToCart = () => {
     if (!product || !product.inStock) return;
@@ -424,7 +424,11 @@ function ProductDetail() {
             {/* Add to cart */}
             <button
               type="button"
-              
+              disabled={
+                !product.inStock ||
+                selectedSize === null ||
+                (product.sizes ?? []).length === 0
+              }
               onClick={handleAddToCart}
               className="mt-8 flex min-h-14 w-full items-center justify-center gap-3 bg-purple-500 px-6 py-4 text-sm font-semibold text-white transition hover:bg-purple-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
             >
