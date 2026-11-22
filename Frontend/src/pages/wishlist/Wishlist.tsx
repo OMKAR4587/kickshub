@@ -117,14 +117,14 @@ function Wishlist() {
         <div className="relative mb-12 flex flex-col justify-between gap-6 border-b border-neutral-200 pb-8 sm:flex-row sm:items-end">
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
+              <span className="h-2 w-2 rounded-full bg-linear-to-r from-blue-600 to-purple-600" />
 
               <span className="text-xs font-bold uppercase tracking-[0.22em] text-neutral-400">
                 Your collection
               </span>
             </div>
 
-            <h1 className="text-5xl font-black leading-none tracking-[-0.05em] text-neutral-950 sm:text-6xl lg:text-7xl">
+            <h1 className="text-5xl font-black leading-none tracking-tighter text-neutral-950 sm:text-6xl lg:text-7xl">
               Wishlist
               <span className="text-purple-600">
                 .
@@ -160,7 +160,7 @@ function Wishlist() {
 
         {/* Empty State */}
         {wishlistProducts.length === 0 && (
-          <div className="relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden rounded-[2rem] border border-neutral-200 bg-neutral-50 px-6 text-center">
+          <div className="relative flex min-h-90 flex-col items-center justify-center overflow-hidden rounded-4xl border border-neutral-200 bg-neutral-50 px-6 text-center">
 
             {/* Decorative circles */}
             <div className="absolute -left-20 -top-20 h-48 w-48 rounded-full border border-neutral-200" />
@@ -223,7 +223,7 @@ function Wishlist() {
 
                   {/* Gradient overlay */}
                   <div
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/15 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                     aria-hidden="true"
                   />
 

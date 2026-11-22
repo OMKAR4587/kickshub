@@ -2,15 +2,23 @@ import type { Product } from "../types/Product";
 
 const API_URL = "http://localhost:5000/api";
 
-export async function getProducts(): Promise<Product[]> {
+
+export type GetProductsResponse = {
+  success: boolean;
+  message?: string;
+  products: Product[];
+};
+
+export async function getProducts(): Promise<GetProductsResponse> {
   const response = await fetch(`${API_URL}/products`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch products");
   }
 
-  return response.json() as Promise<Product[]>;
+  return response.json() as Promise<GetProductsResponse>;
 }
+
 
 export type GetProductResponse = {
   success: boolean;
