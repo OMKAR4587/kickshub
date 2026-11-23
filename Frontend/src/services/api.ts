@@ -1,7 +1,7 @@
 import type { Product } from "../types/Product";
 
 // const API_URL = "http://localhost:5000/api"; for local server
-const API_URL = "https://kickshub-backend-vilx.onrender.com";
+const API_URL = "https://kickshub-backend-vilx.onrender.com/api";
 
 export type GetProductsResponse = {
   success: boolean;
