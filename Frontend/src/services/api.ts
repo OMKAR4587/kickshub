@@ -1,7 +1,7 @@
 import type { Product } from "../types/Product";
 
-const API_URL = "http://localhost:5000/api";
-
+// const API_URL = "http://localhost:5000/api"; for local server
+const API_URL = "https://kickshub-backend-vilx.onrender.com";
 
 export type GetProductsResponse = {
   success: boolean;
@@ -19,15 +19,12 @@ export async function getProducts(): Promise<GetProductsResponse> {
   return response.json() as Promise<GetProductsResponse>;
 }
 
-
 export type GetProductResponse = {
   success: boolean;
   product: Product;
 };
 
-export async function getProduct(
-  id: string
-): Promise<GetProductResponse> {
+export async function getProduct(id: string): Promise<GetProductResponse> {
   const response = await fetch(`${API_URL}/products/${id}`);
 
   if (!response.ok) {
@@ -38,9 +35,9 @@ export async function getProduct(
 }
 
 export async function registerUser(data: {
-  name: string
-  email: string
-  password: string
+  name: string;
+  email: string;
+  password: string;
 }) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
@@ -48,24 +45,21 @@ export async function registerUser(data: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
+  });
 
-  return response.json()
+  return response.json();
 }
 
-export async function loginUser(data: {
-  email: string
-  password: string
-}) {
+export async function loginUser(data: { email: string; password: string }) {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
+  });
 
-  return response.json()
+  return response.json();
 }
 
 export async function getCurrentUser(token: string) {
@@ -73,9 +67,9 @@ export async function getCurrentUser(token: string) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  })
+  });
 
-  return response.json()
+  return response.json();
 }
 
 export async function getCart(token: string) {
@@ -115,36 +109,27 @@ export async function updateCartItem(
   itemId: string,
   quantity: number,
 ) {
-  const response = await fetch(
-    `http://localhost:5000/api/cart/${itemId}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        quantity,
-      }),
+  const response = await fetch(`http://localhost:5000/api/cart/${itemId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-  );
+    body: JSON.stringify({
+      quantity,
+    }),
+  });
 
   return response.json();
 }
 
-export async function removeCartItem(
-  token: string,
-  itemId: string,
-) {
-  const response = await fetch(
-    `http://localhost:5000/api/cart/${itemId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+export async function removeCartItem(token: string, itemId: string) {
+  const response = await fetch(`http://localhost:5000/api/cart/${itemId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return response.json();
 }
@@ -161,43 +146,31 @@ export async function clearCartApi(token: string) {
 }
 
 export async function getWishlist(token: string) {
-  const response = await fetch(
-    "http://localhost:5000/api/wishlist",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch("http://localhost:5000/api/wishlist", {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return response.json();
 }
 
-export async function addWishlistItem(
-  token: string,
-  productId: string,
-) {
-  const response = await fetch(
-    "http://localhost:5000/api/wishlist",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        productId,
-      }),
+export async function addWishlistItem(token: string, productId: string) {
+  const response = await fetch("http://localhost:5000/api/wishlist", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-  );
+    body: JSON.stringify({
+      productId,
+    }),
+  });
 
   return response.json();
 }
 
-export async function removeWishlistItem(
-  token: string,
-  productId: string,
-) {
+export async function removeWishlistItem(token: string, productId: string) {
   const response = await fetch(
     `http://localhost:5000/api/wishlist/${productId}`,
     {
@@ -212,28 +185,22 @@ export async function removeWishlistItem(
 }
 
 export async function createOrder(token: string) {
-  const response = await fetch(
-    "http://localhost:5000/api/orders",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch("http://localhost:5000/api/orders", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return response.json();
 }
 
 export async function getOrders(token: string) {
-  const response = await fetch(
-    "http://localhost:5000/api/orders",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch("http://localhost:5000/api/orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return response.json();
 }
