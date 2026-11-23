@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsc && node dist/server.js",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
