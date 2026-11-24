@@ -73,7 +73,7 @@ export async function getCurrentUser(token: string) {
 }
 
 export async function getCart(token: string) {
-  const response = await fetch("http://localhost:5000/api/cart", {
+  const response = await fetch(`${API_URL}/cart`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -88,7 +88,7 @@ export async function addCartItem(
   size: number,
   quantity: number,
 ) {
-  const response = await fetch("http://localhost:5000/api/cart", {
+  const response = await fetch(`${API_URL}/cart`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -109,7 +109,7 @@ export async function updateCartItem(
   itemId: string,
   quantity: number,
 ) {
-  const response = await fetch(`http://localhost:5000/api/cart/${itemId}`, {
+  const response = await fetch(`${API_URL}/cart/${itemId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -124,7 +124,7 @@ export async function updateCartItem(
 }
 
 export async function removeCartItem(token: string, itemId: string) {
-  const response = await fetch(`http://localhost:5000/api/cart/${itemId}`, {
+  const response = await fetch(`${API_URL}/cart/${itemId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ export async function removeCartItem(token: string, itemId: string) {
 }
 
 export async function clearCartApi(token: string) {
-  const response = await fetch("http://localhost:5000/api/cart", {
+  const response = await fetch(`${API_URL}/cart`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ export async function clearCartApi(token: string) {
 }
 
 export async function getWishlist(token: string) {
-  const response = await fetch("http://localhost:5000/api/wishlist", {
+  const response = await fetch(`${API_URL}/wishlist`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -156,7 +156,7 @@ export async function getWishlist(token: string) {
 }
 
 export async function addWishlistItem(token: string, productId: string) {
-  const response = await fetch("http://localhost:5000/api/wishlist", {
+  const response = await fetch(`${API_URL}/wishlist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export async function addWishlistItem(token: string, productId: string) {
 
 export async function removeWishlistItem(token: string, productId: string) {
   const response = await fetch(
-    `http://localhost:5000/api/wishlist/${productId}`,
+    `${API_URL}/wishlist/${productId}`,
     {
       method: "DELETE",
       headers: {
@@ -185,7 +185,7 @@ export async function removeWishlistItem(token: string, productId: string) {
 }
 
 export async function createOrder(token: string) {
-  const response = await fetch("http://localhost:5000/api/orders", {
+  const response = await fetch(`${API_URL}/orders`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -196,7 +196,7 @@ export async function createOrder(token: string) {
 }
 
 export async function getOrders(token: string) {
-  const response = await fetch("http://localhost:5000/api/orders", {
+  const response = await fetch(`${API_URL}/orders`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -207,7 +207,7 @@ export async function getOrders(token: string) {
 
 export async function createCheckoutSession(token: string) {
   const response = await fetch(
-    "http://localhost:5000/api/payments/create-checkout-session",
+    `${API_URL}/payments/create-checkout-session`,
     {
       method: "POST",
       headers: {
@@ -221,7 +221,7 @@ export async function createCheckoutSession(token: string) {
 
 export async function verifyPayment(sessionId: string, token: string) {
   const response = await fetch(
-    "http://localhost:5000/api/payments/verify-session",
+    `${API_URL}/payments/verify-session`,
     {
       method: "POST",
       headers: {
